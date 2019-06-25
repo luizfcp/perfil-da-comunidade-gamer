@@ -8,6 +8,6 @@ console = questionario %>%
 computador = questionario %>% 
   filter(`Qual plataforma prefere usar para jogar?` == "Desktop (PC de mesa)")
 notebook = questionario %>% 
-  filter(`Qual plataforma prefere usar para jogar?` == "Desktop (PC de mesa)")
+  filter(`Qual plataforma prefere usar para jogar?` == "Notebook")
 celular = questionario %>% 
   filter(`Qual plataforma prefere usar para jogar?` == "Outros (Celular)")
