@@ -279,21 +279,51 @@ dados %>%
 ## tentar explicar com variaveis 
 
 
-# Quantos gigabtes possui sua placa de video ------------------------------
+
+# Merge placas de video PREÇO ---------------------------------------------
 
 ## quem colocou 1060 2 ou 4 gb mudar pra 3
 
-## http://hutsons-hacks.info/pareto-chart-in-ggplot2
-## How to Create a Pie Chart in R using GGPLot2 - Datanovia
-
 library(purrr)
 
-dados %>% 
-  select(qual_a_marca_da_sua_placa_de_video, qual_o_modelo_da_sua_placa_de_video, quantos_gigabytes_possui_sua_placa_de_video) %>% 
-  filter(!is.na(qual_a_marca_da_sua_placa_de_video)) %>% 
-  mutate_at(1:2, ~ str_to_lower())
-  nest(-qual_o_modelo_da_sua_placa_de_video)
-  
+temp <- 
+  dados %>% 
+  select(qual_plataforma_prefere_usar_para_jogar, qual_o_modelo_da_sua_placa_de_video, quantos_gigabytes_possui_sua_placa_de_video) %>% 
+  filter(!is.na(qual_o_modelo_da_sua_placa_de_video) & qual_plataforma_prefere_usar_para_jogar=="Desktop (PC de mesa)") %>% 
+  select(-qual_plataforma_prefere_usar_para_jogar) %>% 
+  mutate_at(1:2, ~ .x %>% str_to_lower()) %>% 
+  nest(- qual_o_modelo_da_sua_placa_de_video) %>% 
+  select(qual_o_modelo_da_sua_placa_de_video) %$% 
+  qual_o_modelo_da_sua_placa_de_video
+
+aux <- 
+  temp[which(str_detect(temp, "^[ahrng17]"))][-which(str_detect(temp, "^[ahrng17]ã"))] %>% 
+  tibble(qual_o_modelo_da_sua_placa_de_video = .)
+
+# dados %>% 
+#   mutate(qual_o_modelo_da_sua_placa_de_video = str_to_lower(qual_o_modelo_da_sua_placa_de_video)) %>% 
+#   inner_join(aux) %>% xlsx::write.xlsx("mergegpu2.xlsx", row.names = F)
+
+base_aux <- read_excel("../data/baseGPU.xlsx")
+base_aux2 <- read_excel("../data/mergegpu2.xlsx") %>% 
+  mutate(qual_a_marca_da_sua_placa_de_video = str_to_lower(qual_a_marca_da_sua_placa_de_video))
+
+base_com_gpu <- 
+  base_aux %>%
+  mutate(Gbs = ifelse(Gbs>8, "mais de 8", Gbs),
+         Gbs = paste(Gbs, "GB")) %>% 
+  unite("modelo_serie", Modelo, Serie, sep = " ") %>% 
+  left_join(base_aux2, by = c("Marca"="qual_a_marca_da_sua_placa_de_video",
+                              "modelo_serie"="qual_o_modelo_da_sua_placa_de_video", 
+                              "Gbs"="quantos_gigabytes_possui_sua_placa_de_video")) %>% 
+  filter(!is.na(carimbo_de_data_hora))
+
+base_com_gpu %>% write.csv2("../data/base_com_gpu.csv", row.names = F)
+base_com_gpu %>% 
+  mutate(Preço = as.numeric(Preço)) %>% 
+  as.data.frame() %>% 
+  xlsx::write.xlsx2("../data/base_com_gpu.xlsx", row.names = F)
+
 
 # Testes Ki-Quadrado ------------------------------------------------------
 
@@ -321,3 +351,4 @@ ki <- chisq.test(tab, correct = T)
 
 
 
+## http://hutsons-hacks.info/pareto-chart-in-ggplot2
