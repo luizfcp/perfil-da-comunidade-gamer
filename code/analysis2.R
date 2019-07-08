@@ -21,8 +21,7 @@ library(stringr)
 raw_data <- read_excel("data/Perfil da Comunidade Gamer (respostas).xlsx") %>% clean_names
 
 dados <- raw_data %>% 
-  filter(com_que_frequencia_costuma_jogar_games!="Nunca" &
-           idade_anos > 9)
+  filter(com_que_frequencia_costuma_jogar_games!="Nunca" & idade_anos > 9)
 
 # Visualizacoes -----------------------------------------------------------
 
@@ -204,11 +203,11 @@ dados %>%
   theme_void() +
   theme(legend.title = element_blank())
 
-# Quantos gigabtes possui sua placa de video
-
-## quem colocou 1060 2 ou 4 gb mudar pra 3
-
-######### final
+# # Quantos gigabtes possui sua placa de video
+# 
+# ## quem colocou 1060 2 ou 4 gb mudar pra 3
+# 
+# ######### final
 
 # A maoria das sua peças (computador) foram compradas em
 
@@ -233,6 +232,64 @@ dados %>%
 
 # Qual console você possui
 
+library(forcats)
+
+dados %>% 
+  select(qual_console_voce_possui) %>% 
+  filter(!is.na(qual_console_voce_possui)) %>% 
+  mutate(
+    qual_console_voce_possui = qual_console_voce_possui %>% 
+      str_to_lower() %>% 
+      str_replace_all(" e ", ", ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>% 
+  filter(str_detect(value, "^a|^d|^master|^3|^super|^nin|^switch|^w|^pl|^ps|^x|^game") & 
+           !str_detect(value, "^xbox$|^playstation$|^nintendo$")) %>% 
+  mutate(
+    value = case_when(
+      str_detect(value, "^wii$")                 ~ str_replace_all(value, "wii", "nintendo wii"),
+      str_detect(value, "^wii u$")               ~ str_replace_all(value, "wii u", "nintendo wii u"),
+      str_detect(value, "^nintendo wii$")        ~ str_replace_all(value, "nintendo wii", "nintendo wii"),
+      str_detect(value, "^nintendo wiiu$")       ~ str_replace_all(value, "nintendo wiiu", "nintendo wii u"),
+      str_detect(value, "^nintendo wii u$")      ~ str_replace_all(value, "nintendo wii u", "nintendo wii u"),
+      str_detect(value, "^switch$")              ~ str_replace_all(value, "switch", "nintendo switch"),
+      str_detect(value, "^nintendo ds$")         ~ str_replace_all(value, "nintendo ds", "nintendo ds"),
+      str_detect(value, "^dsi$")                 ~ str_replace_all(value, "dsi", "nintendo dsi"),
+      str_detect(value, "^3ds xl$")              ~ str_replace_all(value, "3ds xl", "nintendo 3ds xl"),
+      str_detect(value, "^3do$")                 ~ str_replace_all(value, "3do", "nintendo 3ds"),
+      str_detect(value, "^3ds$")                 ~ str_replace_all(value, "3ds", "nintendo 3ds"),
+      str_detect(value, "^3ds \\(hackeado\\)$")  ~ str_replace_all(value, "3ds \\(hackeado\\)", "nintendo 3ds"),
+      str_detect(value, "^nintendo 3ds$")        ~ str_replace_all(value, "nintendo 3ds", "nintendo 3ds"),
+      str_detect(value, "^nintendo64$")          ~ str_replace_all(value, "nintendo64", "nintendo 64"),
+      str_detect(value, "^gamecube$")            ~ str_replace_all(value, "gamecube", "nintendo gamecube"),
+      str_detect(value, "^master sistem$")       ~ str_replace_all(value, "master sistem", "master system 1"),
+      str_detect(value, "^master system$")       ~ str_replace_all(value, "master system", "master system 1"),
+      str_detect(value, "^master system 2$")     ~ str_replace_all(value, "master system 2", "master system 2"),
+      str_detect(value, "^ps1$")                 ~ str_replace_all(value, "ps1", "playstation 1"),
+      str_detect(value, "^ps2$")                 ~ str_replace_all(value, "ps2", "playstation 2"),
+      str_detect(value, "^play 1$")              ~ str_replace_all(value, "play 1", "playstation 1"),
+      str_detect(value, "^dreamcast$")           ~ str_replace_all(value, "dreamcast", "sega dreamcast"),
+      str_detect(value, "^game boy$")            ~ str_replace_all(value, "game boy", "game boy"),
+      str_detect(value, "^game boy advance$")    ~ str_replace_all(value, "game boy advance", "game boy advance"),
+      str_detect(value, "^game boy color$")      ~ str_replace_all(value, "game boy color", "game boy color"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>% 
+  ungroup() %>% 
+  mutate(value = value %>% factor(.,levels = sort(., decreasing = T))) %>% 
+  ggplot(aes(x = value, y = freq)) +
+  geom_bar(stat = 'identity', fill = "#800000") +
+  labs(x = "Console (Video Game)", y = "Frequência Absoluta", title = "Console que os respospondentes dizem possuir") +
+  coord_flip() +
+  geom_text(aes(label = freq), nudge_y = 2, size = 5) +
+  theme_minimal()
 
 # O seu console mais recente foi comprado em
 
@@ -280,75 +337,78 @@ dados %>%
 
 
 
-# Merge placas de video PREÇO ---------------------------------------------
-
-## quem colocou 1060 2 ou 4 gb mudar pra 3
-
-library(purrr)
-
-temp <- 
-  dados %>% 
-  select(qual_plataforma_prefere_usar_para_jogar, qual_o_modelo_da_sua_placa_de_video, quantos_gigabytes_possui_sua_placa_de_video) %>% 
-  filter(!is.na(qual_o_modelo_da_sua_placa_de_video) & qual_plataforma_prefere_usar_para_jogar=="Desktop (PC de mesa)") %>% 
-  select(-qual_plataforma_prefere_usar_para_jogar) %>% 
-  mutate_at(1:2, ~ .x %>% str_to_lower()) %>% 
-  nest(- qual_o_modelo_da_sua_placa_de_video) %>% 
-  select(qual_o_modelo_da_sua_placa_de_video) %$% 
-  qual_o_modelo_da_sua_placa_de_video
-
-aux <- 
-  temp[which(str_detect(temp, "^[ahrng17]"))][-which(str_detect(temp, "^[ahrng17]ã"))] %>% 
-  tibble(qual_o_modelo_da_sua_placa_de_video = .)
-
-# dados %>% 
-#   mutate(qual_o_modelo_da_sua_placa_de_video = str_to_lower(qual_o_modelo_da_sua_placa_de_video)) %>% 
-#   inner_join(aux) %>% xlsx::write.xlsx("mergegpu2.xlsx", row.names = F)
-
-base_aux <- read_excel("../data/baseGPU.xlsx")
-base_aux2 <- read_excel("../data/mergegpu2.xlsx") %>% 
-  mutate(qual_a_marca_da_sua_placa_de_video = str_to_lower(qual_a_marca_da_sua_placa_de_video))
-
-base_com_gpu <- 
-  base_aux %>%
-  mutate(Gbs = ifelse(Gbs>8, "mais de 8", Gbs),
-         Gbs = paste(Gbs, "GB")) %>% 
-  unite("modelo_serie", Modelo, Serie, sep = " ") %>% 
-  left_join(base_aux2, by = c("Marca"="qual_a_marca_da_sua_placa_de_video",
-                              "modelo_serie"="qual_o_modelo_da_sua_placa_de_video", 
-                              "Gbs"="quantos_gigabytes_possui_sua_placa_de_video")) %>% 
-  filter(!is.na(carimbo_de_data_hora))
-
-base_com_gpu %>% write.csv2("../data/base_com_gpu.csv", row.names = F)
-base_com_gpu %>% 
-  mutate(Preço = as.numeric(Preço)) %>% 
-  as.data.frame() %>% 
-  xlsx::write.xlsx2("../data/base_com_gpu.xlsx", row.names = F)
-
-
-# Testes Ki-Quadrado ------------------------------------------------------
-
-## Quanto gasta mensalmente
-## ki quadrado com preço varivavel principal, com escolaridade, idade, sexo, situacao
-
-##http://www.leg.ufpr.br/lib/exe/fetch.php/disciplinas:ce001:teste_do_qui-quadrado.pdf
-  
-ki <- 
-  dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos %>%
-  table(dados$grau_de_escolaridade) %>% 
-  chisq.test()
-
-tab = 
-  table(
-    dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos,
-    dados$grau_de_escolaridade
-  )
-
-ki <- chisq.test(tab, correct = T)
-
-## Como p-value é menor que 0.05, rejeitamos H0 ou seja,
-##  o gasto medio mensal é dependente do grau de escolaridade.
+# # Merge placas de video PREÇO ---------------------------------------------
+# 
+# ## quem colocou 1060 2 ou 4 gb mudar pra 3
+# 
+# library(purrr)
+# 
+# temp <- 
+#   dados %>% 
+#   select(qual_plataforma_prefere_usar_para_jogar, qual_o_modelo_da_sua_placa_de_video, quantos_gigabytes_possui_sua_placa_de_video) %>% 
+#   filter(!is.na(qual_o_modelo_da_sua_placa_de_video) & qual_plataforma_prefere_usar_para_jogar=="Desktop (PC de mesa)") %>% 
+#   select(-qual_plataforma_prefere_usar_para_jogar) %>% 
+#   mutate_at(1:2, ~ .x %>% str_to_lower()) %>% 
+#   nest(- qual_o_modelo_da_sua_placa_de_video) %>% 
+#   select(qual_o_modelo_da_sua_placa_de_video) %$% 
+#   qual_o_modelo_da_sua_placa_de_video
+# 
+# aux <- 
+#   temp[which(str_detect(temp, "^[ahrng17]"))][-which(str_detect(temp, "^[ahrng17]ã"))] %>% 
+#   tibble(qual_o_modelo_da_sua_placa_de_video = .)
+# 
+# # dados %>% 
+# #   mutate(qual_o_modelo_da_sua_placa_de_video = str_to_lower(qual_o_modelo_da_sua_placa_de_video)) %>% 
+# #   inner_join(aux) %>% xlsx::write.xlsx("mergegpu2.xlsx", row.names = F)
+# 
+# base_aux <- read_excel("../data/baseGPU.xlsx")
+# base_aux2 <- read_excel("../data/mergegpu2.xlsx") %>% 
+#   mutate(qual_a_marca_da_sua_placa_de_video = str_to_lower(qual_a_marca_da_sua_placa_de_video))
+# 
+# base_com_gpu <- 
+#   base_aux %>%
+#   mutate(Gbs = ifelse(Gbs>8, "mais de 8", Gbs),
+#          Gbs = paste(Gbs, "GB")) %>% 
+#   unite("modelo_serie", Modelo, Serie, sep = " ") %>% 
+#   left_join(base_aux2, by = c("Marca"="qual_a_marca_da_sua_placa_de_video",
+#                               "modelo_serie"="qual_o_modelo_da_sua_placa_de_video", 
+#                               "Gbs"="quantos_gigabytes_possui_sua_placa_de_video")) %>% 
+#   filter(!is.na(carimbo_de_data_hora))
+# 
+# base_com_gpu %>% write.csv2("../data/base_com_gpu.csv", row.names = F)
+# base_com_gpu %>% 
+#   mutate(Preço = as.numeric(Preço)) %>% 
+#   as.data.frame() %>% 
+#   xlsx::write.xlsx2("../data/base_com_gpu.xlsx", row.names = F)
 
 
+# # Testes Ki-Quadrado ------------------------------------------------------
+# 
+# ## Quanto gasta mensalmente
+# ## ki quadrado com preço varivavel principal, com escolaridade, idade, sexo, situacao
+# 
+# ##http://www.leg.ufpr.br/lib/exe/fetch.php/disciplinas:ce001:teste_do_qui-quadrado.pdf
+#   
+# ki <- 
+#   dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos %>%
+#   table(dados$grau_de_escolaridade) %>% 
+#   chisq.test()
+# 
+# tab = 
+#   table(
+#     dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos,
+#     dados$grau_de_escolaridade
+#   )
+# 
+# ki <- chisq.test(tab, correct = T)
+# 
+# ## Como p-value é menor que 0.05, rejeitamos H0 ou seja,
+# ##  o gasto medio mensal é dependente do grau de escolaridade.
+
+
+# Making off --------------------------------------------------------------
+
+# Qual console você possui, qual placada de video você possui, qual seu jogo preferido, qual estilo de jogo preferido, idade
 
 
 ## http://hutsons-hacks.info/pareto-chart-in-ggplot2
