@@ -283,7 +283,7 @@ dados %>%
   group_by(value) %>% 
   summarise(freq = n()) %>% 
   ungroup() %>% 
-  mutate(value = value %>% factor(.,levels = sort(., decreasing = T))) %>% 
+  mutate(value = value %>% factor(., levels = sort(., decreasing = T))) %>% 
   ggplot(aes(x = value, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   labs(x = "Console (Video Game)", y = "Frequência Absoluta", title = "Console que os respospondentes dizem possuir") +
@@ -317,7 +317,220 @@ dados %>%
 
 # Qual seu jogo preferido
 
+## Mobile
+jogo_preferido_mobile <- 
+  dados %>% 
+  filter(qual_plataforma_prefere_usar_para_jogar=="Outros (Celular)") %>%
+  select(qual_seu_jogo_preferido) %>% 
+  mutate(
+    qual_seu_jogo_preferido = qual_seu_jogo_preferido %>% 
+      str_to_lower() %>% 
+      str_remove_all("\\(atualmente\\)|mas gosto muito de") %>%
+      str_replace_all(" e ", ", ") %>%
+      str_replace_all(" ou ", ", ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>% 
+  filter(!str_detect(value, "não possuo|são muitos|não sei|nenhum|estou sem computador")) %>%
+  mutate(
+    value = case_when(
+      str_detect(value, "^coc$")                 ~ str_replace_all(value, "coc", "clash of clans"),
+      str_detect(value, "^yu-gi-oh duel links$") ~ str_replace_all(value, "yu-gi-oh duel links", "yu-gi-oh! duel links"),
+      str_detect(value, "^dls 2019$")            ~ str_replace_all(value, "dls 2019", "dream league soccer 2019"),
+      str_detect(value, "^pugb$")                ~ str_replace_all(value, "pugb", "pubg"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "Outros (Celular)")
 
+## Console
+jogo_preferido_console <-
+  dados %>% 
+  filter(qual_plataforma_prefere_usar_para_jogar=="Console (video game)") %>%
+  select(qual_seu_jogo_preferido) %>% 
+  mutate(
+    qual_seu_jogo_preferido = qual_seu_jogo_preferido %>% 
+      str_to_lower() %>% 
+      str_remove_all("varios \\. mais atualmente|\\.|\\(2018\\)|\\(mega drive\\)|franquia|em geral|no momento|\\(snes\\)|\\(todos\\)|qualquer|atualmente|\\(nintendo 64\\)|no xbox\\:|principalmente") %>%
+      str_replace_all(" e ", ", ") %>%
+      str_replace_all(" ou ", ", ") %>%
+      str_replace_all(" / ", ", ") %>%
+      str_replace_all(" & ", ", ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>% 
+  filter(!str_detect(value, "^qual|pc\\)|^amanhã|^não|nenhum|atualmente nenhum|^mirtal|^todos|^legacy|gosto de todos|^mário$|^2$|^pergunta|^que eu sempre|^difícil")) %>% 
+  mutate(
+    value = case_when(
+      str_detect(value, "^zelda$")                                    ~ str_replace_all(value, "zelda", "the legend of zelda"),
+      str_detect(value, "^a  de zelda$")                              ~ str_replace_all(value, "a  de zelda", "the legend of zelda"),
+      str_detect(value, "^zelda breath of the wild$")                 ~ str_replace_all(value, "zelda breath of the wild", "the legend of zelda: breath of the wild"),
+      str_detect(value, "^the legende of zelda: ocarina of time$")    ~ str_replace_all(value, "the legende of zelda: ocarina of time", "the legend of zelda: ocarina of time"),
+      str_detect(value, "^zelda ocarina of time$")                    ~ str_replace_all(value, "zelda ocarina of time", "the legend of zelda: ocarina of time"),
+      str_detect(value, "^the legend of zelda: ocarina of the time$") ~ str_replace_all(value, "the legend of zelda: ocarina of the time", "the legend of zelda: ocarina of time"),
+      str_detect(value, "^the legend of zelda - twilight princess$")  ~ str_replace_all(value, "the legend of zelda - twilight princess", "the legend of zelda: twilight princess"),
+      str_detect(value, "^o tony hawk pro skater 4$")                 ~ str_replace_all(value, "o tony hawk pro skater 4", "tony hawk pro skater 4"),
+      str_detect(value, "^assassin\\´s creed$")                       ~ str_replace_all(value, "assassin\\´s creed", "assassins creed"),
+      str_detect(value, "^assassin\\'s creed$")                       ~ str_replace_all(value, "assassin\\'s creed", "assassins creed"),
+      str_detect(value, "^assasins creed$")                           ~ str_replace_all(value, "assasins creed", "assassins creed"),
+      str_detect(value, "^ac black flag$")                            ~ str_replace_all(value, "ac black flag", "assassins creed black flag"),
+      str_detect(value, "^rdr1$")                                     ~ str_replace_all(value, "rdr1", "red dead redemption 1"),
+      str_detect(value, "^rdr2$")                                     ~ str_replace_all(value, "rdr2", "red dead redemption 2"),
+      str_detect(value, "^read dead 2$")                              ~ str_replace_all(value, "read dead 2", "red dead redemption 2"),
+      str_detect(value, "^rede dead redemption 2$")                   ~ str_replace_all(value, "rede dead redemption 2", "red dead redemption 2"),
+      str_detect(value, "^nba2k19$")                                  ~ str_replace_all(value, "nba2k19", "nba 2k19"),
+      str_detect(value, "^bf$")                                       ~ str_replace_all(value, "bf", "battlefield"),
+      str_detect(value, "^bf4$")                                      ~ str_replace_all(value, "bf4", "battlefield 4"),
+      str_detect(value, "^grand theft auto$")                         ~ str_replace_all(value, "grand theft auto", "gta"),
+      str_detect(value, "^grand thef auto v$")                        ~ str_replace_all(value, "grand thef auto v", "gta v"),
+      str_detect(value, "^grand theft auto v$")                       ~ str_replace_all(value, "grand theft auto v", "gta v"),
+      str_detect(value, "^gta 5$")                                    ~ str_replace_all(value, "gta 5", "gta v"),
+      str_detect(value, "^r6$")                                       ~ str_replace_all(value, "r6", "rainbow six siege"),
+      str_detect(value, "^raimbow six$")                              ~ str_replace_all(value, "raimbow six", "rainbow six siege"),
+      str_detect(value, "^rainbow six$")                              ~ str_replace_all(value, "rainbow six", "rainbow six siege"),
+      str_detect(value, "^rainbown six$")                             ~ str_replace_all(value, "rainbown six", "rainbow six siege"),
+      str_detect(value, "^rainbow six suege$")                        ~ str_replace_all(value, "rainbow six suege", "rainbow six siege"),
+      str_detect(value, "^rainbowsixsiege$")                          ~ str_replace_all(value, "rainbowsixsiege", "rainbow six siege"),
+      str_detect(value, "^wow$")                                      ~ str_replace_all(value, "wow", "world of warcraft"),
+      str_detect(value, "^dark souls 1$")                             ~ str_replace_all(value, "dark souls 1", "dark souls"),
+      str_detect(value, "^destiny 1/2$")                              ~ str_replace_all(value, "destiny 1/2", "destiny 2"),
+      str_detect(value, "^hoje é apex$")                              ~ str_replace_all(value, "hoje é apex", "apex legends"),
+      str_detect(value, "^apex$")                                     ~ str_replace_all(value, "apex", "apex legends"),
+      str_detect(value, "^twd$")                                      ~ str_replace_all(value, "twd", "the walking dead"),
+      str_detect(value, "^tomb rider$")                               ~ str_replace_all(value, "tomb rider", "tomb raider"),
+      str_detect(value, "^cod$")                                      ~ str_replace_all(value, "cod", "call of duty"),
+      str_detect(value, "^calor of dutty$")                           ~ str_replace_all(value, "calor of dutty", "call of duty"),
+      str_detect(value, "^black ops ii$")                             ~ str_replace_all(value, "black ops ii", "call of duty: black ops ii"),
+      str_detect(value, "^news for speed most wanted$")               ~ str_replace_all(value, "news for speed most wanted", "need for speed most wanted"),
+      str_detect(value, "^the elder scrools v - skyrim$")             ~ str_replace_all(value, "the elder scrools v - skyrim", "the elder scrolls v: skyrim"),
+      str_detect(value, "^the witcher 3$")                            ~ str_replace_all(value, "the witcher 3", "the witcher 3 wild hunter"),
+      str_detect(value, "^the wicher 3 wild hunter$")                 ~ str_replace_all(value, "the wicher 3 wild hunter", "the witcher 3 wild hunter"),
+      str_detect(value, "^the witcher 3 wild hunt$")                  ~ str_replace_all(value, "the witcher 3 wild hunt", "the witcher 3 wild hunter"),
+      str_detect(value, "^fifa soccer$")                              ~ str_replace_all(value, "fifa soccer", "fifa"),
+      str_detect(value, "^f1 2018$")                                  ~ str_replace_all(value, "f1 2018", "formula 1"),
+      str_detect(value, "^forza$")                                    ~ str_replace_all(value, "forza", "forza horizon"),
+      str_detect(value, "^teken$")                                    ~ str_replace_all(value, "teken", "tekken"),
+      str_detect(value, "^pokemon$")                                  ~ str_replace_all(value, "pokemon", "pokémon"),
+      str_detect(value, "^megaman x$")                                ~ str_replace_all(value, "megaman x", "mega man x"),
+      str_detect(value, "^kingdonm hearts 3$")                        ~ str_replace_all(value, "kingdonm hearts 3", "kingdom hearts 3"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "Console (video game)")
+
+## PC
+jogo_preferido_pc <-
+  dados %>% 
+  filter(qual_plataforma_prefere_usar_para_jogar %in% c("Desktop (PC de mesa)", "Notebook")) %>%
+  select(qual_seu_jogo_preferido) %>% 
+  mutate(
+    qual_seu_jogo_preferido = qual_seu_jogo_preferido %>% 
+      str_to_lower() %>%
+      str_remove_all("saga|offline|online|no monento eu jogo|qualquer|!|no momento|pq e gratis <3|\\.|atualmente|a serie| o |entre|entre outros|franquia|competitivo - |casual - |\\(jogo muitos\\, não tenho um preferido\\) tem tempo q jogo mais uns e tempo q jogo outros|") %>%
+      str_replace_all(" e ", ", ") %>%
+      str_replace_all(" ou ", ", ") %>%
+      str_replace_all(" / ", ", ") %>%
+      str_replace_all(" // ", ", ") %>%
+      str_replace_all("/", ", ") %>%
+      str_replace_all(" & ", ", ") %>%
+      str_replace_all("; ", ", ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>% 
+  filter(!str_detect(value, "^cada|etc|minha cama|mas |masmelhor|^não|^nao|^num|^nem|^nenhum|^todos|^outros|^gosto|^l2")) %>% 
+  mutate(
+    value = case_when(
+      str_detect(value, "^ark$") ~ str_replace_all(value, "ark", "ark survival evolved"),
+      str_detect(value, "ark survival evolved^$") ~ str_replace_all(value, "ark survival evolved", "ark survival evolved"),
+      str_detect(value, "^assasin\\'s creed$") ~ str_replace_all(value, "assasin\\'s creed", "assasins creed"),
+      str_detect(value, "^bf4$") ~ str_replace_all(value, "bf4", "battlefield 4"),
+      str_detect(value, "^cod bo2$") ~ str_replace_all(value, "cod bo2", "call of duty: black ops ii"),
+      str_detect(value, "^cod black ops ii$") ~ str_replace_all(value, "cod black ops ii", "call of duty: black ops ii"),
+      str_detect(value, "^counter") ~ "counter-strike: global offensive",
+      str_detect(value, "^cs$") ~ "counter-strike",
+      str_detect(value, "^cs") ~ "counter-strike: global offensive",
+      str_detect(value, "^pubg") ~ "pubg",
+      str_detect(value, "^dota2$") ~ str_replace_all(value, "dota2", "dota 2"),
+      str_detect(value, "^ets2$") ~ str_replace_all(value, "ets2", "euro truck simulator 2"),
+      str_detect(value, "^fallout new vegas$") ~ str_replace_all(value, "fallout new vegas", "fallout: new vegas"),
+      str_detect(value, "^fortinite$") ~ str_replace_all(value, "fortinite", "fortnite"),
+      str_detect(value, "^grand fantasia gfpt$") ~ str_replace_all(value, "grand fantasia gfpt", "	grand fantasia"),
+      str_detect(value, "^grande theft auto 5$") ~ str_replace_all(value, "grande theft auto 5", "gta v"),
+      str_detect(value, "^grand theft auto v$") ~ str_replace_all(value, "grand theft auto v", "gta v"),
+      str_detect(value, "^gta 5") ~ "gta v",
+      str_detect(value, "^gta:mta$") ~ str_replace_all(value, "gta:mta", "gta"),
+      str_detect(value, "^gtav$") ~ str_replace_all(value, "gtav", "gta v"),
+      str_detect(value, "^half life$") ~ str_replace_all(value, "half life", "half-life"),
+      str_detect(value, "^kh2$") ~ str_replace_all(value, "kh2", "kingdom hearts 2"),
+      str_detect(value, "^lea") ~ "league of legends",
+      str_detect(value, "^lol") ~ "league of legends",
+      str_detect(value, "^monsters hunter") ~ str_replace_all(value, "monsters hunter", "monster hunter"),
+      str_detect(value, "^monster hunter world") ~ str_replace_all(value, "monster hunter world", "monster hunter"),
+      str_detect(value, "^wow") ~ "world of warcraft",
+      str_detect(value, "^world os warcraft$") ~ str_replace_all(value, "world os warcraft", "world of warcraft"),
+      str_detect(value, "^word of warcraft$") ~ str_replace_all(value, "word of warcraft", "world of warcraft"),
+      str_detect(value, "^world  of warcraft$") ~ str_replace_all(value, "world  of warcraft", "world of warcraft"),
+      str_detect(value, "^wot$") ~ str_replace_all(value, "wot", "world of tanks"),
+      str_detect(value, "^worl of tanks$") ~ str_replace_all(value, "worl of tanks", "world of tanks"),
+      str_detect(value, "^tíbia$") ~ str_replace_all(value, "tíbia", "tibia"),
+      str_detect(value, "^witcher 3$") ~ str_replace_all(value, "witcher 3", "the witcher 3"),
+      str_detect(value, "^zelda$") ~ str_replace_all(value, "the legend of zelda", "the legend of zelda"),
+      str_detect(value, "^tes") ~ "the elder scrolls v: skyrim",
+      str_detect(value, "^skyrim$") ~ str_replace_all(value, "skyrim", "the elder scrolls v: skyrim"),
+      str_detect(value, "^r6$") ~ str_replace_all(value, "r6", "rainbow six siege"),
+      str_detect(value, "^rainbow six$") ~ str_replace_all(value, "rainbow six", "rainbow six siege"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "Desktop/Notebook")
+      
+plot <- jogo_preferido_mobile %>% 
+  bind_rows(jogo_preferido_console) %>%
+  bind_rows(jogo_preferido_pc) %>%
+  nest(-plataforma) %>% 
+  mutate(
+    plot = map2(
+      plataforma, data,
+      ~ .y %>% 
+        ggplot(aes(x = reorder(value, -freq), y = freq)) +
+        geom_bar(stat = "identity", fill = "#800000") +
+        coord_flip() +
+        labs(x = "", y = "", subtitle = .x) +
+        theme_minimal() +
+        geom_label(aes(label = freq))
+    )
+  ) %$% plot
+
+ggarrange(plots=plot, left="Nome do Jogo", bottom="Frequência Absoluta", 
+          top="Jogo preferido dos respondentes separados por plataforma", ncol=3)
+      
 # Em media, quanto costuma gastar mensalmente com jogos
 
 dados %>% 
@@ -408,7 +621,7 @@ dados %>%
 
 # Making off --------------------------------------------------------------
 
-# Qual console você possui, qual placada de video você possui, qual seu jogo preferido, qual estilo de jogo preferido, idade
+# Qual console você possui, qual placada de video você possui, qual seu jogo preferido (	dinossauro do chrome sem internet), qual estilo de jogo preferido, idade
 
 
 ## http://hutsons-hacks.info/pareto-chart-in-ggplot2
