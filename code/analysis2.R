@@ -23,9 +23,11 @@ raw_data <- read_excel("data/Perfil da Comunidade Gamer (respostas).xlsx") %>% c
 dados <- raw_data %>% 
   filter(com_que_frequencia_costuma_jogar_games!="Nunca" & idade_anos > 9)
 
+
 # Visualizacoes -----------------------------------------------------------
 
-# Com que frequencia costuma jogar games?
+
+# Com que frequencia costuma jogar games? ---------------------------------
 
 raw_data %>% 
   group_by(com_que_frequencia_costuma_jogar_games) %>% 
@@ -37,7 +39,8 @@ raw_data %>%
   annotate("text", label = paste("Total de respostas =", 911), x = 3.5, y = 600, size = 4) +
   theme_minimal()
 
-# Genero
+
+# Genero ------------------------------------------------------------------
 
 dados %>% 
   group_by(genero) %>% 
@@ -50,7 +53,8 @@ dados %>%
   theme_minimal() +
   theme(legend.position = "None")
 
-# Idade por Genero
+
+# Idade por Genero --------------------------------------------------------
 
 dados %>% 
   select(idade_anos, genero) %>% 
@@ -61,7 +65,8 @@ dados %>%
   theme_minimal() +
   theme(legend.position = "None")
 
-# Situacao atual
+
+# Situacao atual ----------------------------------------------------------
 
 dados %>% 
   group_by(situacao_atual) %>% 
@@ -87,7 +92,8 @@ dados %>%
   labs(x = "", y = "Frequência Absoluta", title = "Situação atual") +
   coord_flip()
 
-# Grau de escolaridade 
+
+# Grau de escolaridade  ---------------------------------------------------
 
 dados %>% 
   group_by(grau_de_escolaridade) %>% 
@@ -99,7 +105,8 @@ dados %>%
   coord_flip() +
   theme_minimal()
 
-# Qual plataforma prefere usar para jogar
+
+# Qual plataforma prefere usar para jogar ---------------------------------
 
 dados %>% 
   group_by(qual_plataforma_prefere_usar_para_jogar) %>% 
@@ -126,7 +133,8 @@ dados %>%
   labs(x = "", y = "Frequência Absoluta", title = "Qual plataforma prefere usar para jogar") +
   coord_flip()
 
-# Voce conhece os componentes do seu computador
+
+# Voce conhece os componentes do seu computador ---------------------------
 
 dados %>% 
   filter(!is.na(voce_conhece_os_componentes_do_seu_computador_processador_placa_de_video_e_memoria_ram)) %>% 
@@ -148,7 +156,8 @@ dados %>%
   theme_void() +
   theme(legend.title = element_blank())
 
-# Quantos gigabytes de memoria RAM
+
+# Quantos gigabytes de memoria RAM ----------------------------------------
 
 dados %>% 
   filter(!is.na(quantos_gigabytes_de_memoria_ram)) %>% 
@@ -161,7 +170,8 @@ dados %>%
   labs(x = "", y = "Frequência Absoluta", title = "Quantos Gigabytes de memória RAM?") +
   theme_minimal()
 
-# Qual a marca do seu porcessador
+
+# Qual a marca do seu porcessador -----------------------------------------
 
 dados %>% 
   filter(!is.na(qual_a_marca_do_seu_processador)) %>% 
@@ -182,7 +192,8 @@ dados %>%
   theme_void() +
   theme(legend.title = element_blank())
 
-# Qual a marca da sua placa de video
+
+# Qual a marca da sua placa de video --------------------------------------
 
 dados %>% 
   filter(!is.na(qual_a_marca_da_sua_placa_de_video)) %>% 
@@ -203,13 +214,15 @@ dados %>%
   theme_void() +
   theme(legend.title = element_blank())
 
-# # Quantos gigabtes possui sua placa de video
-# 
+
+# # Quantos gigabtes possui sua placa de video ----------------------------
+
 # ## quem colocou 1060 2 ou 4 gb mudar pra 3
 # 
 # ######### final
 
-# A maoria das sua peças (computador) foram compradas em
+
+# A maoria das sua peças (computador) foram compradas em ------------------
 
 dados %>% 
   filter(!is.na(a_maioria_das_suas_pecas_foram_compradas_em)) %>% 
@@ -230,9 +243,8 @@ dados %>%
   theme_void() +
   theme(legend.title = element_blank())
 
-# Qual console você possui
 
-library(forcats)
+# Qual console você possui ------------------------------------------------
 
 dados %>% 
   select(qual_console_voce_possui) %>% 
@@ -286,12 +298,14 @@ dados %>%
   mutate(value = value %>% factor(., levels = sort(., decreasing = T))) %>% 
   ggplot(aes(x = value, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
-  labs(x = "Console (Video Game)", y = "Frequência Absoluta", title = "Console que os respospondentes dizem possuir") +
+  labs(x = "Console (Video Game)", y = "Frequência Absoluta", 
+       title = "Console que os respospondentes disseram possuir") +
   coord_flip() +
   geom_text(aes(label = freq), nudge_y = 2, size = 5) +
   theme_minimal()
 
-# O seu console mais recente foi comprado em
+
+# O seu console mais recente foi comprado em ------------------------------
 
 dados %>% 
   filter(!is.na(o_seu_console_mais_recente_foi_comprado_em)) %>% 
@@ -315,7 +329,10 @@ dados %>%
 # Qual seu estilo de jogo favorito
 
 
-# Qual seu jogo preferido
+
+
+
+# Qual seu jogo preferido -------------------------------------------------
 
 ## Mobile
 jogo_preferido_mobile <- 
@@ -530,8 +547,9 @@ plot <- jogo_preferido_mobile %>%
 
 ggarrange(plots=plot, left="Nome do Jogo", bottom="Frequência Absoluta", 
           top="Jogo preferido dos respondentes separados por plataforma", ncol=3)
-      
-# Em media, quanto costuma gastar mensalmente com jogos
+
+
+# Em media, quanto costuma gastar mensalmente com jogos -------------------
 
 dados %>% 
   filter(!is.na(em_media_quanto_costuma_gastar_mensalmente_com_jogos)) %>% 
