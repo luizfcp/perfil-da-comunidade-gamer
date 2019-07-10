@@ -326,10 +326,168 @@ dados %>%
   theme_void() +
   theme(legend.title = element_blank())
 
-# Qual seu estilo de jogo favorito
 
+# Qual seu estilo de jogo favorito ----------------------------------------
 
+## As 3 plataformas
+estilo_jogo_as3 <- 
+  dados %>% 
+  select(qual_seu_estilo_de_jogo_favorito) %>% 
+  mutate(
+    qual_seu_estilo_de_jogo_favorito = qual_seu_estilo_de_jogo_favorito %>% 
+      str_to_lower() %>% 
+      str_remove_all("\\(monster hunter") %>%
+      str_replace_all(" e ", ", ") %>%
+      # str_replace_all("/", ", ") %>%
+      str_replace_all(" \\- ", ": ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_replace_all("\\.", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>%
+  filter(!str_detect(value, "^jogos|4x|^sexo|etc|^todo|^dormir|^é|^harry|\\)")) %>%
+  mutate(
+    value = case_when(
+      str_detect(value, "^rts") ~ "rts: estratégia em tempo real",
+      # str_detect(value, "^ark$") ~ str_replace_all(value, "ark", "ark survival evolved"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "As 3 plataformas")
 
+## Mobile
+estilo_jogo_mobile <- 
+  dados %>% 
+  filter(qual_plataforma_prefere_usar_para_jogar=="Outros (Celular)") %>% 
+  select(qual_seu_estilo_de_jogo_favorito) %>% 
+  mutate(
+    qual_seu_estilo_de_jogo_favorito = qual_seu_estilo_de_jogo_favorito %>% 
+      str_to_lower() %>% 
+      str_remove_all("\\(monster hunter") %>%
+      str_replace_all(" e ", ", ") %>%
+      # str_replace_all("/", ", ") %>%
+      str_replace_all(" \\- ", ": ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_replace_all("\\.", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>%
+  filter(!str_detect(value, "^jogos|4x|^sexo|etc|^todo|^dormir|^é|^harry|\\)")) %>%
+  mutate(
+    value = case_when(
+      str_detect(value, "^rts") ~ "rts: estratégia em tempo real",
+      # str_detect(value, "^ark$") ~ str_replace_all(value, "ark", "ark survival evolved"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "Outros (Celular)")
+
+## Console
+estilo_jogo_console <- 
+  dados %>% 
+  filter(qual_plataforma_prefere_usar_para_jogar=="Console (video game)") %>% 
+  select(qual_seu_estilo_de_jogo_favorito) %>% 
+  mutate(
+    qual_seu_estilo_de_jogo_favorito = qual_seu_estilo_de_jogo_favorito %>% 
+      str_to_lower() %>% 
+      str_remove_all("\\(monster hunter") %>%
+      str_replace_all(" e ", ", ") %>%
+      # str_replace_all("/", ", ") %>%
+      str_replace_all(" \\- ", ": ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_replace_all("\\.", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>%
+  filter(!str_detect(value, "^jogos|4x|^sexo|etc|^todo|^dormir|^é|^harry|\\)")) %>%
+  mutate(
+    value = case_when(
+      str_detect(value, "^rts") ~ "rts: estratégia em tempo real",
+      # str_detect(value, "^ark$") ~ str_replace_all(value, "ark", "ark survival evolved"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "Console (video game)")
+
+## PC
+estilo_jogo_pc <- 
+  dados %>% 
+  filter(qual_plataforma_prefere_usar_para_jogar %in% c("Desktop (PC de mesa)", "Notebook")) %>%
+  select(qual_seu_estilo_de_jogo_favorito) %>% 
+  mutate(
+    qual_seu_estilo_de_jogo_favorito = qual_seu_estilo_de_jogo_favorito %>% 
+      str_to_lower() %>% 
+      str_remove_all("\\(monster hunter") %>%
+      str_replace_all(" e ", ", ") %>%
+      # str_replace_all("/", ", ") %>%
+      str_replace_all(" \\- ", ": ") %>%
+      str_replace_all(" ", "_") %>%
+      str_replace_all(",", " ") %>% 
+      str_replace_all("\\.", " ") %>% 
+      str_split(" ")
+  ) %>% 
+  unlist() %>% 
+  as_tibble() %>% 
+  mutate(value = value %>% str_replace_all("_", " ") %>% str_trim()) %>%
+  filter(!str_detect(value, "^jogos|4x|^sexo|etc|^todo|^dormir|^é|^harry|\\)")) %>%
+  mutate(
+    value = case_when(
+      str_detect(value, "^rts") ~ "rts: estratégia em tempo real",
+      # str_detect(value, "^ark$") ~ str_replace_all(value, "ark", "ark survival evolved"),
+      TRUE ~ value
+    )
+  ) %>% 
+  group_by(value) %>% 
+  summarise(freq = n()) %>%
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ungroup() %>% 
+  mutate(plataforma = "Desktop/Notebook")
+
+plot <- estilo_jogo_mobile %>% 
+  bind_rows(estilo_jogo_console) %>%
+  bind_rows(estilo_jogo_pc) %>%
+  bind_rows(estilo_jogo_as3) %>%
+  nest(-plataforma) %>% 
+  mutate(
+    plot = map2(
+      plataforma, data,
+      ~ .y %>% 
+        ggplot(aes(x = reorder(value, -freq), y = freq)) +
+        geom_bar(stat = "identity", fill = "#800000") +
+        coord_flip() +
+        labs(x = "", y = "", subtitle = .x) +
+        theme_minimal() +
+        geom_label(aes(label = freq))
+    )
+  ) %$% plot
+
+ggarrange(plots=plot, left="Estilo de jogo", bottom="Frequência Absoluta", 
+          top="Estilo de jogo preferido dos respondentes separados por plataforma", ncol=2)
 
 
 # Qual seu jogo preferido -------------------------------------------------
