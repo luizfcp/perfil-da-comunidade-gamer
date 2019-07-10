@@ -15,6 +15,8 @@ library(magrittr)
 library(scales)
 library(tidyr)
 library(stringr)
+library(egg)
+library(purrr)
 
 # Bases -------------------------------------------------------------------
 
@@ -35,9 +37,8 @@ raw_data %>%
   ggplot(., aes(x = reorder(com_que_frequencia_costuma_jogar_games, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#0f0559") +
   labs(x = "", y = "Frequência Absoluta", title = "Com que frequência costuma jogar games?") +
-  geom_text(aes(label = freq), nudge_y = 10) +
-  annotate("text", label = paste("Total de respostas =", 911), x = 3.5, y = 600, size = 4) +
-  theme_minimal()
+  geom_label(aes(label = freq)) +
+  annotate("text", label = paste("Total de respostas =", 911), x = 3.5, y = 600, size = 4)
 
 
 # Genero ------------------------------------------------------------------
@@ -45,12 +46,11 @@ raw_data %>%
 dados %>% 
   group_by(genero) %>% 
   summarise(freq = n()) %>% 
-  ggplot(aes(x = genero, y = freq, fill = genero)) +
-  geom_bar(stat = 'identity') +
-  geom_text(aes(label = freq), nudge_y = 20) +
+  ggplot(aes(x = genero, y = freq)) +
+  geom_bar(aes(fill = genero), stat = 'identity') +
+  geom_label(aes(label = freq)) +
   scale_fill_manual(values = c("royalblue", "pink", "orange")) +
   labs(x = "", y = "Frequência Absoluta", title = "Gênero") +
-  theme_minimal() +
   theme(legend.position = "None")
 
 
@@ -62,7 +62,6 @@ dados %>%
   geom_boxplot(aes(fill = genero)) +
   scale_fill_manual(values = c("royalblue", "pink", "orange")) +
   labs(x = "", y = "Idade", title = "Idade (anos)") +
-  theme_minimal() +
   theme(legend.position = "None")
 
 
@@ -73,24 +72,24 @@ dados %>%
   summarise(freq = n()) %>%
   ggplot(aes(x = reorder(situacao_atual, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
-  geom_text(aes(label = freq), nudge_y = -20, color = "white") +
+  geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", title = "Situação atual") +
   coord_flip()
 
-## Paretto
-dados %>% 
-  group_by(situacao_atual) %>% 
-  summarise(freq = n()) %>%
-  ungroup() %>% 
-  arrange(-freq) %>% 
-  mutate(acumulado = cumsum(freq)) %>% 
-  ggplot(aes(x = reorder(situacao_atual, -freq))) +
-  geom_bar(aes(y = freq), stat = 'identity', fill = "#800000") +
-  geom_point(aes(y = acumulado)) +
-  geom_path(aes(y = acumulado, group = 1)) +
-  geom_text(aes(y = freq, label = freq), nudge_y = -20, color = "white") +
-  labs(x = "", y = "Frequência Absoluta", title = "Situação atual") +
-  coord_flip()
+# ## Paretto
+# dados %>% 
+#   group_by(situacao_atual) %>% 
+#   summarise(freq = n()) %>%
+#   ungroup() %>% 
+#   arrange(-freq) %>% 
+#   mutate(acumulado = cumsum(freq)) %>% 
+#   ggplot(aes(x = reorder(situacao_atual, -freq))) +
+#   geom_bar(aes(y = freq), stat = 'identity', fill = "#800000") +
+#   geom_point(aes(y = acumulado)) +
+#   geom_path(aes(y = acumulado, group = 1)) +
+#   geom_text(aes(y = freq, label = freq), nudge_y = -20, color = "white") +
+#   labs(x = "", y = "Frequência Absoluta", title = "Situação atual") +
+#   coord_flip()
 
 
 # Grau de escolaridade  ---------------------------------------------------
@@ -100,10 +99,9 @@ dados %>%
   summarise(freq = n()) %>% 
   ggplot(aes(x = grau_de_escolaridade, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
-  geom_text(aes(label = freq), nudge_y = -10, color = "white") +
+  geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", title = "Grau de escolaridade") +
-  coord_flip() +
-  theme_minimal()
+  coord_flip() 
 
 
 # Qual plataforma prefere usar para jogar ---------------------------------
@@ -113,25 +111,24 @@ dados %>%
   summarise(freq = n()) %>% 
   ggplot(aes(x = reorder(qual_plataforma_prefere_usar_para_jogar, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
-  geom_text(aes(label = freq), nudge_y = -10, color = "white") +
+  geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", title = "Qual plataforma prefere usar para jogar") +
-  coord_flip() +
-  theme_minimal()
+  coord_flip() 
 
-## Paretto
-dados %>% 
-  group_by(qual_plataforma_prefere_usar_para_jogar) %>% 
-  summarise(freq = n()) %>%
-  ungroup() %>% 
-  arrange(-freq) %>% 
-  mutate(acumulado = cumsum(freq)) %>% 
-  ggplot(aes(x = reorder(qual_plataforma_prefere_usar_para_jogar, -freq))) +
-  geom_bar(aes(y = freq), stat = 'identity', fill = "#800000") +
-  geom_point(aes(y = acumulado)) +
-  geom_path(aes(y = acumulado, group = 1)) +
-  geom_text(aes(y = freq, label = freq), nudge_y = -20, color = "white") +
-  labs(x = "", y = "Frequência Absoluta", title = "Qual plataforma prefere usar para jogar") +
-  coord_flip()
+# ## Paretto
+# dados %>% 
+#   group_by(qual_plataforma_prefere_usar_para_jogar) %>% 
+#   summarise(freq = n()) %>%
+#   ungroup() %>% 
+#   arrange(-freq) %>% 
+#   mutate(acumulado = cumsum(freq)) %>% 
+#   ggplot(aes(x = reorder(qual_plataforma_prefere_usar_para_jogar, -freq))) +
+#   geom_bar(aes(y = freq), stat = 'identity', fill = "#800000") +
+#   geom_point(aes(y = acumulado)) +
+#   geom_path(aes(y = acumulado, group = 1)) +
+#   geom_text(aes(y = freq, label = freq), nudge_y = -20, color = "white") +
+#   labs(x = "", y = "Frequência Absoluta", title = "Qual plataforma prefere usar para jogar") +
+#   coord_flip()
 
 
 # Voce conhece os componentes do seu computador ---------------------------
@@ -166,9 +163,8 @@ dados %>%
   mutate(quantos_gigabytes_de_memoria_ram = factor(quantos_gigabytes_de_memoria_ram, levels = c(paste(c(1,2,4,6,8,12,16, "mais de 16"), "GB")))) %>% 
   ggplot(aes(x = quantos_gigabytes_de_memoria_ram, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
-  geom_text(aes(label = freq), nudge_y = 5) +
-  labs(x = "", y = "Frequência Absoluta", title = "Quantos Gigabytes de memória RAM?") +
-  theme_minimal()
+  geom_label(aes(label = freq)) +
+  labs(x = "", y = "Frequência Absoluta", title = "Quantos Gigabytes de memória RAM?")
 
 
 # Qual a marca do seu porcessador -----------------------------------------
@@ -301,8 +297,7 @@ dados %>%
   labs(x = "Console (Video Game)", y = "Frequência Absoluta", 
        title = "Console que os respospondentes disseram possuir") +
   coord_flip() +
-  geom_text(aes(label = freq), nudge_y = 2, size = 5) +
-  theme_minimal()
+  geom_label(aes(label = freq))
 
 
 # O seu console mais recente foi comprado em ------------------------------
@@ -718,9 +713,9 @@ dados %>%
                   levels = c("Nada", "R$1 a R$50", "R$51 a R$100", "R$101 a R$150", "R$151 a R$200", "mais de R$200"))) %>% 
   ggplot(aes(x = em_media_quanto_costuma_gastar_mensalmente_com_jogos, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
-  geom_text(aes(label = freq), nudge_y = -10, color = "white") +
-  labs(x = "", y = "Frequência Absoluta", title = "Em média, quanto costuma gastar mensalmente com jogos?") +
-  theme_minimal()
+  geom_label(aes(label = freq)) +
+  labs(x = "", y = "Frequência Absoluta", title = "Em média, quanto costuma gastar mensalmente com jogos?")
+
 
 ## tentar explicar com variaveis 
 
