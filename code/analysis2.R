@@ -828,11 +828,6 @@ base_com_gpu <-
 
 ## http://hutsons-hacks.info/pareto-chart-in-ggplot2
 
-
-# - -----------------------------------------------------------------------
-# Testes ------------------------------------------------------------------
-
-
 lst(
   p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
 ) %>% 
@@ -845,10 +840,83 @@ lst(
       scale = 1,
       dpi = "retina"
     )
-  ) 
-  
+  )
 
 
+
+# - -----------------------------------------------------------------------
+# Testes ------------------------------------------------------------------
+
+amd <- 
+  base_com_gpu %>% 
+  filter(Marca=="amd") %>% 
+  mutate(Preço = as.numeric(Preço)) %$% 
+  Preço
+
+nvidia <- 
+  base_com_gpu %>% 
+  filter(Marca=="nvidia") %>% 
+  mutate(Preço = as.numeric(Preço)) %$% 
+  Preço
+
+
+
+## Queremos saber se a media dos preços das placas videos da amd é estatisticamente
+## igual ou diferente das placas de video da nvidia
+
+## Seja a X a media dos preços da amd e Y a media dos preços da nvidia
+
+# Ho: muX  =  muY
+# H1: muX =/= muY
+
+## Primeiro vamos descobrir se as variancias são guais ou diferentes
+## ou seja, homocedasticidade
+
+# Ho: sigX  =  sigY
+# H1: sigX =/= sigY
+
+install.packages("DescTools")
+library(DescTools)
+
+base_com_gpu2 <- 
+  base_com_gpu %>% 
+  select(Marca, Preço) %>% 
+  mutate(Preço = as.numeric(Preço)) %>% 
+  as.data.frame()
+
+LeveneTest(Preço ~ Marca, base_com_gpu2)
+
+# ou seja rejeitamos h0
+
+t.test(amd, nvidia, var.equal = FALSE, alt = "two.sided")
+t.test(amd, nvidia, var.equal = FALSE, alt = "less")
+t.test(amd, nvidia, var.equal = FALSE, alt = "greater")
+
+
+amd %>% mean()
+nvidia %>% mean()
+
+amd %>% sd()
+nvidia %>% sd()
+
+
+#Creating example code
+sample1 <- rnorm(20)
+sample2 <- rnorm(20)
+
+#General code to reshape two vectors into a long data.frame
+twoVarWideToLong <- function(sample1,sample2) {
+  res <- data.frame(
+    GroupID=as.factor(c(rep(1, length(sample1)), rep(2, length(sample2)))),
+    DV=c(sample1, sample2)
+  )   
+}   
+
+#Reshaping the example data
+long.data <- twoVarWideToLong(sample1,sample2)
+
+#There are many different calls here that will work... but here is an example
+LeveneTest(DV~GroupID,long.data)
 
 
 
