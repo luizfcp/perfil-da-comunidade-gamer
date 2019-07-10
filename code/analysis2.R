@@ -31,49 +31,56 @@ dados <- raw_data %>%
 
 # Com que frequencia costuma jogar games? ---------------------------------
 
-raw_data %>% 
+p1 <- 
+  raw_data %>% 
   group_by(com_que_frequencia_costuma_jogar_games) %>% 
   summarise(freq = n()) %>% 
   ggplot(., aes(x = reorder(com_que_frequencia_costuma_jogar_games, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#0f0559") +
-  labs(x = "", y = "Frequência Absoluta", title = "Com que frequência costuma jogar games?") +
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Frequência que os respondentes costumam jogar") +
   geom_label(aes(label = freq)) +
   annotate("text", label = paste("Total de respostas =", 911), x = 3.5, y = 600, size = 4)
 
 
 # Genero ------------------------------------------------------------------
 
-dados %>% 
+p2 <- 
+  dados %>% 
   group_by(genero) %>% 
   summarise(freq = n()) %>% 
   ggplot(aes(x = genero, y = freq)) +
   geom_bar(aes(fill = genero), stat = 'identity') +
   geom_label(aes(label = freq)) +
   scale_fill_manual(values = c("royalblue", "pink", "orange")) +
-  labs(x = "", y = "Frequência Absoluta", title = "Gênero") +
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Frequência do gênero dos respondentes") +
   theme(legend.position = "None")
 
 
 # Idade por Genero --------------------------------------------------------
 
-dados %>% 
+p3 <- 
+  dados %>% 
   select(idade_anos, genero) %>% 
   ggplot(aes(x = genero, y = idade_anos)) +
   geom_boxplot(aes(fill = genero)) +
   scale_fill_manual(values = c("royalblue", "pink", "orange")) +
-  labs(x = "", y = "Idade", title = "Idade (anos)") +
+  labs(x = "", y = "Idade", title = "Idade (em anos) dos respondentes") +
   theme(legend.position = "None")
 
 
 # Situacao atual ----------------------------------------------------------
 
-dados %>% 
+p4 <- 
+  dados %>% 
   group_by(situacao_atual) %>% 
   summarise(freq = n()) %>%
   ggplot(aes(x = reorder(situacao_atual, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
-  labs(x = "", y = "Frequência Absoluta", title = "Situação atual") +
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Situação atual dos respondentes") +
   coord_flip()
 
 # ## Paretto
@@ -94,25 +101,29 @@ dados %>%
 
 # Grau de escolaridade  ---------------------------------------------------
 
-dados %>% 
+p5 <- 
+  dados %>% 
   group_by(grau_de_escolaridade) %>% 
   summarise(freq = n()) %>% 
   ggplot(aes(x = grau_de_escolaridade, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
-  labs(x = "", y = "Frequência Absoluta", title = "Grau de escolaridade") +
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Grau de escolaridade dos respondentes") +
   coord_flip() 
 
 
 # Qual plataforma prefere usar para jogar ---------------------------------
 
-dados %>% 
+p6 <- 
+  dados %>% 
   group_by(qual_plataforma_prefere_usar_para_jogar) %>% 
   summarise(freq = n()) %>% 
   ggplot(aes(x = reorder(qual_plataforma_prefere_usar_para_jogar, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
-  labs(x = "", y = "Frequência Absoluta", title = "Qual plataforma prefere usar para jogar") +
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Plataforma que os respondentes preferem usar para jogar") +
   coord_flip() 
 
 # ## Paretto
@@ -133,7 +144,8 @@ dados %>%
 
 # Voce conhece os componentes do seu computador ---------------------------
 
-dados %>% 
+p7 <- 
+  dados %>% 
   filter(!is.na(voce_conhece_os_componentes_do_seu_computador_processador_placa_de_video_e_memoria_ram)) %>% 
   group_by(voce_conhece_os_componentes_do_seu_computador_processador_placa_de_video_e_memoria_ram) %>% 
   summarise(freq = n()) %>%
@@ -156,7 +168,8 @@ dados %>%
 
 # Quantos gigabytes de memoria RAM ----------------------------------------
 
-dados %>% 
+p8 <- 
+  dados %>% 
   filter(!is.na(quantos_gigabytes_de_memoria_ram)) %>% 
   group_by(quantos_gigabytes_de_memoria_ram) %>% 
   summarise(freq = n()) %>% 
@@ -164,12 +177,14 @@ dados %>%
   ggplot(aes(x = quantos_gigabytes_de_memoria_ram, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
-  labs(x = "", y = "Frequência Absoluta", title = "Quantos Gigabytes de memória RAM?")
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Quantidade de memória RAM em gigabytes")
 
 
 # Qual a marca do seu porcessador -----------------------------------------
 
-dados %>% 
+p9 <- 
+  dados %>% 
   filter(!is.na(qual_a_marca_do_seu_processador)) %>% 
   group_by(qual_a_marca_do_seu_processador) %>% 
   summarise(freq = n()) %>% 
@@ -183,7 +198,7 @@ dados %>%
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "Qual a marca do seu porcessador?") +
+       title = "Marca do porcessador") +
   coord_polar(theta = "y") +
   theme_void() +
   theme(legend.title = element_blank())
@@ -191,7 +206,8 @@ dados %>%
 
 # Qual a marca da sua placa de video --------------------------------------
 
-dados %>% 
+p10 <- 
+  dados %>% 
   filter(!is.na(qual_a_marca_da_sua_placa_de_video)) %>% 
   group_by(qual_a_marca_da_sua_placa_de_video) %>% 
   summarise(freq = n()) %>% 
@@ -205,7 +221,7 @@ dados %>%
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "Qual a marca da sua placa de video?") +
+       title = "Marca da placa de video") +
   coord_polar(theta = "y") +
   theme_void() +
   theme(legend.title = element_blank())
@@ -220,7 +236,8 @@ dados %>%
 
 # A maoria das sua peças (computador) foram compradas em ------------------
 
-dados %>% 
+p11 <- 
+  dados %>% 
   filter(!is.na(a_maioria_das_suas_pecas_foram_compradas_em)) %>% 
   group_by(a_maioria_das_suas_pecas_foram_compradas_em) %>% 
   summarise(freq = n()) %>% 
@@ -234,7 +251,7 @@ dados %>%
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "A maioria das suas peças foram compradas em:") +
+       title = "Local de compra da maioria das peças do computador") +
   coord_polar(theta = "y") +
   theme_void() +
   theme(legend.title = element_blank())
@@ -242,7 +259,8 @@ dados %>%
 
 # Qual console você possui ------------------------------------------------
 
-dados %>% 
+p12 <- 
+  dados %>% 
   select(qual_console_voce_possui) %>% 
   filter(!is.na(qual_console_voce_possui)) %>% 
   mutate(
@@ -302,7 +320,8 @@ dados %>%
 
 # O seu console mais recente foi comprado em ------------------------------
 
-dados %>% 
+p13 <- 
+  dados %>% 
   filter(!is.na(o_seu_console_mais_recente_foi_comprado_em)) %>% 
   group_by(o_seu_console_mais_recente_foi_comprado_em) %>% 
   summarise(freq = n()) %>% 
@@ -316,7 +335,7 @@ dados %>%
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "O seu console mais recente foi comprado em:") +
+       title = "Local de compra do console mais recente") +
   coord_polar(theta = "y") +
   theme_void() +
   theme(legend.title = element_blank())
@@ -481,8 +500,14 @@ plot <- estilo_jogo_mobile %>%
     )
   ) %$% plot
 
-ggarrange(plots=plot, left="Estilo de jogo", bottom="Frequência Absoluta", 
-          top="Estilo de jogo preferido dos respondentes separados por plataforma", ncol=2)
+p14 <- 
+  ggarrange(
+    plots = plot,
+    left = "Estilo de jogo",
+    bottom = "Frequência Absoluta",
+    top = "Estilo de jogo preferido dos respondentes separados por plataforma",
+    ncol = 2
+  )
 
 
 # Qual seu jogo preferido -------------------------------------------------
@@ -698,13 +723,20 @@ plot <- jogo_preferido_mobile %>%
     )
   ) %$% plot
 
-ggarrange(plots=plot, left="Nome do Jogo", bottom="Frequência Absoluta", 
-          top="Jogo preferido dos respondentes separados por plataforma", ncol=3)
+p15 <-
+  ggarrange(
+    plots = plot,
+    left = "Nome do Jogo",
+    bottom = "Frequência Absoluta",
+    top = "Jogo preferido dos respondentes separados por plataforma",
+    ncol = 3
+  )
 
 
 # Em media, quanto costuma gastar mensalmente com jogos -------------------
 
-dados %>% 
+p16 <- 
+  dados %>% 
   filter(!is.na(em_media_quanto_costuma_gastar_mensalmente_com_jogos)) %>% 
   group_by(em_media_quanto_costuma_gastar_mensalmente_com_jogos) %>% 
   summarise(freq = n()) %>% 
@@ -714,7 +746,8 @@ dados %>%
   ggplot(aes(x = em_media_quanto_costuma_gastar_mensalmente_com_jogos, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
-  labs(x = "", y = "Frequência Absoluta", title = "Em média, quanto costuma gastar mensalmente com jogos?")
+  labs(x = "", y = "Frequência Absoluta", 
+       title = "Gasto mensal médio com jogos")
 
 
 ## tentar explicar com variaveis 
@@ -724,8 +757,6 @@ dados %>%
 # # Merge placas de video PREÇO ---------------------------------------------
 # 
 # ## quem colocou 1060 2 ou 4 gb mudar pra 3
-# 
-# library(purrr)
 # 
 # temp <- 
 #   dados %>% 
@@ -744,21 +775,21 @@ dados %>%
 # # dados %>% 
 # #   mutate(qual_o_modelo_da_sua_placa_de_video = str_to_lower(qual_o_modelo_da_sua_placa_de_video)) %>% 
 # #   inner_join(aux) %>% xlsx::write.xlsx("mergegpu2.xlsx", row.names = F)
-# 
-# base_aux <- read_excel("../data/baseGPU.xlsx")
-# base_aux2 <- read_excel("../data/mergegpu2.xlsx") %>% 
-#   mutate(qual_a_marca_da_sua_placa_de_video = str_to_lower(qual_a_marca_da_sua_placa_de_video))
-# 
-# base_com_gpu <- 
-#   base_aux %>%
-#   mutate(Gbs = ifelse(Gbs>8, "mais de 8", Gbs),
-#          Gbs = paste(Gbs, "GB")) %>% 
-#   unite("modelo_serie", Modelo, Serie, sep = " ") %>% 
-#   left_join(base_aux2, by = c("Marca"="qual_a_marca_da_sua_placa_de_video",
-#                               "modelo_serie"="qual_o_modelo_da_sua_placa_de_video", 
-#                               "Gbs"="quantos_gigabytes_possui_sua_placa_de_video")) %>% 
-#   filter(!is.na(carimbo_de_data_hora))
-# 
+
+base_aux <- read_excel("data/baseGPU.xlsx")
+base_aux2 <- read_excel("data/mergegpu2.xlsx") %>%
+  mutate(qual_a_marca_da_sua_placa_de_video = str_to_lower(qual_a_marca_da_sua_placa_de_video))
+
+base_com_gpu <-
+  base_aux %>%
+  mutate(Gbs = ifelse(Gbs>8, "mais de 8", Gbs),
+         Gbs = paste(Gbs, "GB")) %>%
+  unite("modelo_serie", Modelo, Serie, sep = " ") %>%
+  left_join(base_aux2, by = c("Marca"="qual_a_marca_da_sua_placa_de_video",
+                              "modelo_serie"="qual_o_modelo_da_sua_placa_de_video",
+                              "Gbs"="quantos_gigabytes_possui_sua_placa_de_video")) %>%
+  filter(!is.na(carimbo_de_data_hora))
+
 # base_com_gpu %>% write.csv2("../data/base_com_gpu.csv", row.names = F)
 # base_com_gpu %>% 
 #   mutate(Preço = as.numeric(Preço)) %>% 
@@ -796,3 +827,28 @@ dados %>%
 
 
 ## http://hutsons-hacks.info/pareto-chart-in-ggplot2
+
+
+# - -----------------------------------------------------------------------
+# Testes ------------------------------------------------------------------
+
+
+lst(
+  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
+) %>% 
+  walk2(paste0("p",1:16),
+    ~ ggsave(
+      plot = .x,
+      filename = paste0("img/", .y, ".png"),
+      width = 12.00,
+      height = 8.20,
+      scale = 1,
+      dpi = "retina"
+    )
+  ) 
+  
+
+
+
+
+
