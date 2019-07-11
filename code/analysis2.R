@@ -196,10 +196,7 @@ p7 <-
   theme_void() +
   # theme(legend.title = element_blank()) +
   theme(legend.title = element_blank(),
-        title = element_text(face = "bold"), 
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12))
+        title = element_text(face = "bold"))
 
 
 # Quantos gigabytes de memoria RAM ----------------------------------------
@@ -245,10 +242,7 @@ p9 <-
   theme_void() +
   # theme(legend.title = element_blank()) +
   theme(legend.title = element_blank(),
-        title = element_text(face = "bold"), 
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12))
+        title = element_text(face = "bold"))
 
 
 # Qual a marca da sua placa de video --------------------------------------
@@ -274,10 +268,7 @@ p10 <-
   theme_void() +
   # theme(legend.title = element_blank())
   theme(legend.title = element_blank(),
-        title = element_text(face = "bold"), 
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12))
+        title = element_text(face = "bold"))
 
 
 # # Quantos gigabtes possui sua placa de video ----------------------------
@@ -310,10 +301,7 @@ p11 <-
   theme_void() +
   # theme(legend.title = element_blank())
   theme(legend.title = element_blank(),
-        title = element_text(face = "bold"), 
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12))
+        title = element_text(face = "bold"))
 
 
 # Qual console você possui ------------------------------------------------
@@ -405,10 +393,7 @@ p13 <-
   theme_void() +
   # theme(legend.title = element_blank())
   theme(legend.title = element_blank(),
-        title = element_text(face = "bold"), 
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12))
+        title = element_text(face = "bold"))
 
 
 # Qual seu estilo de jogo favorito ----------------------------------------
