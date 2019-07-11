@@ -30,7 +30,6 @@ dados <- raw_data %>%
 
 # Visualizacoes -----------------------------------------------------------
 
-
 # Com que frequencia costuma jogar games? ---------------------------------
 
 p1 <- 
@@ -40,9 +39,14 @@ p1 <-
   ggplot(., aes(x = reorder(com_que_frequencia_costuma_jogar_games, -freq), y = freq)) +
   geom_bar(stat = 'identity', fill = "#0f0559") +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Frequência que os respondentes costumam jogar") +
+       title = "Com que frequência costuma jogar games?") +
+       # title = "Frequência que os respondentes costumam jogar") +
   geom_label(aes(label = freq)) +
-  annotate("text", label = paste("Total de respostas =", 911), x = 3.5, y = 600, size = 4)
+  annotate("text", label = paste("Total de respostas =", 911), x = 3.5, y = 600, size = 5) +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Genero ------------------------------------------------------------------
@@ -56,8 +60,13 @@ p2 <-
   geom_label(aes(label = freq)) +
   scale_fill_manual(values = c("royalblue", "pink", "orange")) +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Frequência do gênero dos respondentes") +
-  theme(legend.position = "None")
+       # title = "Frequência do gênero dos respondentes") +
+       title = "Gênero") +
+  theme(legend.position = "None") +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Idade por Genero --------------------------------------------------------
@@ -68,8 +77,13 @@ p3 <-
   ggplot(aes(x = genero, y = idade_anos)) +
   geom_boxplot(aes(fill = genero)) +
   scale_fill_manual(values = c("royalblue", "pink", "orange")) +
-  labs(x = "", y = "Idade", title = "Idade (em anos) dos respondentes") +
-  theme(legend.position = "None")
+  # labs(x = "", y = "Idade", title = "Idade (em anos) dos respondentes") +
+  labs(x = "", y = "Idade", title = "Idade") +
+  theme(legend.position = "None") +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Situacao atual ----------------------------------------------------------
@@ -82,8 +96,13 @@ p4 <-
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Situação atual dos respondentes") +
-  coord_flip()
+       # title = "Situação atual dos respondentes") +
+       title = "Situação atual ") +
+  coord_flip() +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 # ## Paretto
 # dados %>% 
@@ -111,8 +130,13 @@ p5 <-
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Grau de escolaridade dos respondentes") +
-  coord_flip() 
+       # title = "Grau de escolaridade dos respondentes") +
+       title = "Grau de escolaridade") +
+  coord_flip() +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Qual plataforma prefere usar para jogar ---------------------------------
@@ -125,8 +149,13 @@ p6 <-
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Plataforma que os respondentes preferem usar para jogar") +
-  coord_flip() 
+       # title = "Plataforma que os respondentes preferem usar para jogar") +
+       title = "Qual plataforma prefere usar para jogar?") +
+  coord_flip() +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 # ## Paretto
 # dados %>% 
@@ -165,7 +194,12 @@ p7 <-
        title = "Você conhece os componentes do seu computador \n (Processador, Placa de Vídeo e Memória RAM) ?") +
   coord_polar("y") +
   theme_void() +
-  theme(legend.title = element_blank())
+  # theme(legend.title = element_blank()) +
+  theme(legend.title = element_blank(),
+        title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Quantos gigabytes de memoria RAM ----------------------------------------
@@ -180,7 +214,12 @@ p8 <-
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Quantidade de memória RAM em gigabytes")
+       # title = "Quantidade de memória RAM em gigabytes") +
+       title = "Quantos Gigabytes de Memória RAM?") +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Qual a marca do seu porcessador -----------------------------------------
@@ -200,10 +239,16 @@ p9 <-
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "Marca do porcessador") +
+       # title = "Marca do porcessador") +
+       title = "Qual a marca do seu processador?") +
   coord_polar(theta = "y") +
   theme_void() +
-  theme(legend.title = element_blank())
+  # theme(legend.title = element_blank()) +
+  theme(legend.title = element_blank(),
+        title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Qual a marca da sua placa de video --------------------------------------
@@ -223,10 +268,16 @@ p10 <-
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "Marca da placa de video") +
+       # title = "Marca da placa de video") +
+       title = "Qual a marca da sua Placa de Vídeo") +
   coord_polar(theta = "y") +
   theme_void() +
-  theme(legend.title = element_blank())
+  # theme(legend.title = element_blank())
+  theme(legend.title = element_blank(),
+        title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # # Quantos gigabtes possui sua placa de video ----------------------------
@@ -253,10 +304,16 @@ p11 <-
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "Local de compra da maioria das peças do computador") +
+       # title = "Local de compra da maioria das peças do computador") +
+       title = "A maioria das suas peças foram compradas em:") +
   coord_polar(theta = "y") +
   theme_void() +
-  theme(legend.title = element_blank())
+  # theme(legend.title = element_blank())
+  theme(legend.title = element_blank(),
+        title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Qual console você possui ------------------------------------------------
@@ -315,9 +372,14 @@ p12 <-
   ggplot(aes(x = value, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   labs(x = "Console (Video Game)", y = "Frequência Absoluta", 
-       title = "Console que os respospondentes disseram possuir") +
+       # title = "Console que os respospondentes disseram possuir") +
+       title = "Qual console você possui?") +
   coord_flip() +
-  geom_label(aes(label = freq))
+  geom_label(aes(label = freq)) +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # O seu console mais recente foi comprado em ------------------------------
@@ -337,10 +399,16 @@ p13 <-
   geom_text(aes(y = ypos, label = prop_lab), nudge_y = -10, color = "white") +
   scale_fill_manual(values = c("#800020", "#247f59")) +
   labs(x = "", y = "", 
-       title = "Local de compra do console mais recente") +
+       # title = "Local de compra do console mais recente") +
+       title = "O seu console mais recente foi comprado em:") +
   coord_polar(theta = "y") +
   theme_void() +
-  theme(legend.title = element_blank())
+  # theme(legend.title = element_blank())
+  theme(legend.title = element_blank(),
+        title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 # Qual seu estilo de jogo favorito ----------------------------------------
@@ -498,7 +566,11 @@ plot <- estilo_jogo_mobile %>%
         coord_flip() +
         labs(x = "", y = "", subtitle = .x) +
         theme_minimal() +
-        geom_label(aes(label = freq))
+        geom_label(aes(label = freq)) +
+        theme(title = element_text(face = "bold"), 
+              axis.title = element_text(face = "bold"),
+              axis.text.x = element_text(size = 12),
+              axis.text.y = element_text(size = 12))
     )
   ) %$% plot
 
@@ -507,7 +579,8 @@ p14 <-
     plots = plot,
     left = "Estilo de jogo",
     bottom = "Frequência Absoluta",
-    top = "Estilo de jogo preferido dos respondentes separados por plataforma",
+    # top = "Estilo de jogo preferido dos respondentes separados por plataforma",
+    top = "Qual seu estilo de jogo favorito? ",
     ncol = 2
   )
 
@@ -721,7 +794,11 @@ plot <- jogo_preferido_mobile %>%
         coord_flip() +
         labs(x = "", y = "", subtitle = .x) +
         theme_minimal() +
-        geom_label(aes(label = freq))
+        geom_label(aes(label = freq)) +
+        theme(title = element_text(face = "bold"), 
+              axis.title = element_text(face = "bold"),
+              axis.text.x = element_text(size = 12),
+              axis.text.y = element_text(size = 12))
     )
   ) %$% plot
 
@@ -730,7 +807,8 @@ p15 <-
     plots = plot,
     left = "Nome do Jogo",
     bottom = "Frequência Absoluta",
-    top = "Jogo preferido dos respondentes separados por plataforma",
+    # top = "Jogo preferido dos respondentes separados por plataforma",
+    top = "Qual seu jogo preferido?",
     ncol = 3
   )
 
@@ -749,7 +827,12 @@ p16 <-
   geom_bar(stat = 'identity', fill = "#800000") +
   geom_label(aes(label = freq)) +
   labs(x = "", y = "Frequência Absoluta", 
-       title = "Gasto mensal médio com jogos")
+       # title = "Gasto mensal médio com jogos") +
+       title = "Em média, quanto costuma gastar mensalmente com jogos?") +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
 
 
 ## tentar explicar com variaveis 
@@ -846,12 +929,12 @@ tabela <-
 
 # Qual console você possui, qual placa de video você possui, qual seu jogo preferido (	dinossauro do chrome sem internet), qual estilo de jogo preferido, idade
 
-dados %>% 
-  # mutate(qual_o_modelo_da_sua_placa_de_video = qual_o_modelo_da_sua_placa_de_video %>% str_to_lower()) %>% 
-  select(qual_seu_jogo_preferido) %>% 
-  distinct() %>% 
-  arrange(qual_seu_jogo_preferido)
-  filter(!str_detect(qual_o_modelo_da_sua_placa_de_video, "GT"))
+# dados %>% 
+#   # mutate(qual_o_modelo_da_sua_placa_de_video = qual_o_modelo_da_sua_placa_de_video %>% str_to_lower()) %>% 
+#   select(qual_seu_jogo_preferido) %>% 
+#   distinct() %>% 
+#   arrange(qual_seu_jogo_preferido)
+#   filter(!str_detect(qual_o_modelo_da_sua_placa_de_video, "GT"))
 
 
 
@@ -863,19 +946,18 @@ dados %>%
 # save --------------------------------------------------------------------
 
 
-# lst(
-#   p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
-# ) %>% 
-#   walk2(paste0("p",1:16),
-#     ~ ggsave(
-#       plot = .x,
-#       filename = paste0("img/", .y, ".png"),
-#       width = 12.00,
-#       height = 8.20,
-#       scale = 1,
-#       dpi = "retina"
-#     )
-#   )
+lst(
+  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
+) %>%
+  walk2(paste0("p",1:16),
+    ~ ggsave(
+      plot = .x,
+      filename = paste0("img/", .y, ".png"),
+      width = 12.00*0.6,
+      height = 8.20*0.6,
+      dpi = "retina"
+    )
+  )
 
 
 
