@@ -836,6 +836,8 @@ tabela <-
   align(align = "center", j = 3) %>% 
   align(align = "center", part = "header", j = 3) 
 
+# insert_screenshot(tabela, "tabela.png")
+
 # ## Como p-value é menor que 0.05, rejeitamos H0 ou seja,
 # ##  o gasto medio mensal é dependente do grau de escolaridade.
 
