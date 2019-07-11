@@ -844,7 +844,17 @@ tabela <-
 
 # Making off --------------------------------------------------------------
 
-# Qual console você possui, qual placada de video você possui, qual seu jogo preferido (	dinossauro do chrome sem internet), qual estilo de jogo preferido, idade
+# Qual console você possui, qual placa de video você possui, qual seu jogo preferido (	dinossauro do chrome sem internet), qual estilo de jogo preferido, idade
+
+dados %>% 
+  # mutate(qual_o_modelo_da_sua_placa_de_video = qual_o_modelo_da_sua_placa_de_video %>% str_to_lower()) %>% 
+  select(qual_seu_jogo_preferido) %>% 
+  distinct() %>% 
+  arrange(qual_seu_jogo_preferido)
+  filter(!str_detect(qual_o_modelo_da_sua_placa_de_video, "GT"))
+
+
+
 
 
 ## http://hutsons-hacks.info/pareto-chart-in-ggplot2
@@ -872,61 +882,62 @@ tabela <-
 # # - -----------------------------------------------------------------------
 # # Testes ------------------------------------------------------------------
 # 
-# amd <- 
-#   base_com_gpu %>% 
-#   filter(Marca=="amd") %>% 
-#   mutate(Preço = as.numeric(Preço)) %$% 
-#   Preço
-# 
-# nvidia <- 
-#   base_com_gpu %>% 
-#   filter(Marca=="nvidia") %>% 
-#   mutate(Preço = as.numeric(Preço)) %$% 
-#   Preço
-# 
-# ## Queremos saber se a media dos preços das placas de video da amd é estatisticamente
-# ## igual ou diferente das placas de video da nvidia
-# 
-# ## Seja X a media dos preços da amd e Y a media dos preços da nvidia
-# 
-# ## Vamos verificar se as variaveis seguem distribuição normal
-# 
-# library(DescTools)
-# 
-# base_com_gpu2 <- 
-#   base_com_gpu %>% 
-#   select(Marca, Preço) %>% 
-#   mutate(Preço = as.numeric(Preço),
-#          Preço = (Preço - mean(Preço))/sd(Preço)) %>% 
-#   as.data.frame()
-#   
-# shapiro.test(amd)
-# shapiro.test(nvidia)
-# 
-# ## Pelo teste de normalidade de Shapiro, concluimos que tanto a amd quanto a nvidia não possuem distribuição normal
-# 
-# # Mas, supomos normalidade para realizar o teste de hipótese
-# 
-# ## Vamos verificar a igualdade das variancias, ou seja,
-# 
-# # Ho: sigX / sigY  =  1
-# # H1: sigX / sigY =/= 1
-# 
-# VarTest(amd, nvidia, alternative = "two.sided", ratio = 1, conf.level = 0.95)
-# 
-# ## Com um nível de significância de 0.05, rejeitamos a h0, ou seja, as varincias não possuem igualdade entre elas
-# 
-# ## Agora, realizaremos o teste para verificar se a média dos preços das 2 variáveis são 
-# ## estatisticamente iguais ou diferente
-# 
-# # Ho: muX  =  muY
-# # H1: muX =/= muY
-# 
-# t.test(amd, nvidia, var.equal = FALSE, alt = "two.sided")
-# 
-# ## Com base num nível de significância de 5%, rejeitamos H0, ou seja, as médias dos preços 
-# ## das duas marcas  não são iguaus.
+amd <-
+  base_com_gpu %>%
+  filter(Marca=="amd") %>%
+  mutate(Preço = as.numeric(Preço)) %$%
+  Preço
 
+nvidia <-
+  base_com_gpu %>%
+  filter(Marca=="nvidia") %>%
+  mutate(Preço = as.numeric(Preço)) %$%
+  Preço
 
+## Queremos saber se a media dos preços das placas de video da amd é estatisticamente
+## igual ou diferente das placas de video da nvidia
+
+## Seja X a media dos preços da amd e Y a media dos preços da nvidia
+
+## Vamos verificar se as variaveis seguem distribuição normal
+
+library(DescTools)
+
+base_com_gpu2 <-
+  base_com_gpu %>%
+  select(Marca, Preço) %>%
+  mutate(Preço = as.numeric(Preço),
+         Preço = (Preço - mean(Preço))/sd(Preço)) %>%
+  as.data.frame()
+
+amd_p <- shapiro.test(amd)
+nvidia_p <- shapiro.test(nvidia)
+
+## Pelo teste de normalidade de Shapiro, concluimos que tanto a amd quanto a nvidia não possuem distribuição normal
+
+# Mas, supomos normalidade para realizar o teste de hipótese
+
+## Vamos verificar a igualdade das variancias, ou seja,
+
+# Ho: sigX / sigY  =  1
+# H1: sigX / sigY =/= 1
+
+var <- VarTest(amd, nvidia, alternative = "two.sided", ratio = 1, conf.level = 0.95)
+
+## Com um nível de significância de 0.05, rejeitamos a h0, ou seja, as varincias não possuem igualdade entre elas
+
+## Agora, realizaremos o teste para verificar se a média dos preços das 2 variáveis são
+## estatisticamente iguais ou diferente
+
+# Ho: muX  =  muY
+# H1: muX =/= muY
+
+tsao <- t.test(amd, nvidia, var.equal = FALSE, alt = "two.sided")
+
+## Com base num nível de significância de 5%, rejeitamos H0, ou seja, as médias dos preços
+## das duas marcas  não são iguaus.
+
+t.test(amd)
+t.test(nvidia)
 
 
