@@ -17,6 +17,8 @@ library(tidyr)
 library(stringr)
 library(egg)
 library(purrr)
+library(flextable)
+library(DescTools)
 
 # Bases -------------------------------------------------------------------
 
@@ -800,23 +802,40 @@ base_com_gpu <-
 # # Testes Ki-Quadrado ------------------------------------------------------
 # 
 # ## Quanto gasta mensalmente
-# ## ki quadrado com preço varivavel principal, com escolaridade, idade, sexo, situacao
+# ## ki quadrado com preço varivavel principal, com escolaridade, idade, sexo, situacao, frquencia joga
 # 
 # ##http://www.leg.ufpr.br/lib/exe/fetch.php/disciplinas:ce001:teste_do_qui-quadrado.pdf
-#   
-# ki <- 
-#   dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos %>%
-#   table(dados$grau_de_escolaridade) %>% 
-#   chisq.test()
-# 
-# tab = 
-#   table(
-#     dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos,
-#     dados$grau_de_escolaridade
-#   )
-# 
-# ki <- chisq.test(tab, correct = T)
-# 
+
+
+tabela <- 
+  lst(
+    dados$com_que_frequencia_costuma_jogar_games,
+    dados$situacao_atual,
+    dados$grau_de_escolaridade,
+    dados$qual_plataforma_prefere_usar_para_jogar
+  ) %>% 
+  map(
+    ~ dados$em_media_quanto_costuma_gastar_mensalmente_com_jogos %>%
+      table(.x) %>%
+      chisq.test(correct = TRUE) %$% p.value
+  ) %>% 
+  as_tibble() %>% 
+  `colnames<-`(c("Com que frequência costuma jogar games",
+                 "Situação atual",
+                 "Grau de escolaridade",
+                 "Qual plataforma prefere usar para jogar")) %>% 
+  gather("Variável 2", p_valor) %>% 
+  mutate(p_valor = ifelse(p_valor < 0.0001, "<0.0001", p_valor %>% round(4))) %>% 
+  transmute("Variável 1" = "Em média, quanto costuma gastar mensalmente com jogos?",
+            `Variável 2`, p_valor) %>% 
+  regulartable() %>% 
+  theme_zebra(odd_header = "Black", odd_body = "white", even_body = "lightgray") %>% 
+  color(color = "white", part = "header") %>% 
+  align(align = "left", j = 1:2) %>% 
+  align(align = "left", part = "header", j = 1:2) %>% 
+  align(align = "center", j = 3) %>% 
+  align(align = "center", part = "header", j = 3) 
+
 # ## Como p-value é menor que 0.05, rejeitamos H0 ou seja,
 # ##  o gasto medio mensal é dependente do grau de escolaridade.
 
@@ -828,95 +847,84 @@ base_com_gpu <-
 
 ## http://hutsons-hacks.info/pareto-chart-in-ggplot2
 
-lst(
-  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
-) %>% 
-  walk2(paste0("p",1:16),
-    ~ ggsave(
-      plot = .x,
-      filename = paste0("img/", .y, ".png"),
-      width = 12.00,
-      height = 8.20,
-      scale = 1,
-      dpi = "retina"
-    )
-  )
+
+# save --------------------------------------------------------------------
+
+
+# lst(
+#   p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
+# ) %>% 
+#   walk2(paste0("p",1:16),
+#     ~ ggsave(
+#       plot = .x,
+#       filename = paste0("img/", .y, ".png"),
+#       width = 12.00,
+#       height = 8.20,
+#       scale = 1,
+#       dpi = "retina"
+#     )
+#   )
 
 
 
-# - -----------------------------------------------------------------------
-# Testes ------------------------------------------------------------------
+# # - -----------------------------------------------------------------------
+# # Testes ------------------------------------------------------------------
+# 
+# amd <- 
+#   base_com_gpu %>% 
+#   filter(Marca=="amd") %>% 
+#   mutate(Preço = as.numeric(Preço)) %$% 
+#   Preço
+# 
+# nvidia <- 
+#   base_com_gpu %>% 
+#   filter(Marca=="nvidia") %>% 
+#   mutate(Preço = as.numeric(Preço)) %$% 
+#   Preço
+# 
+# ## Queremos saber se a media dos preços das placas de video da amd é estatisticamente
+# ## igual ou diferente das placas de video da nvidia
+# 
+# ## Seja X a media dos preços da amd e Y a media dos preços da nvidia
+# 
+# ## Vamos verificar se as variaveis seguem distribuição normal
+# 
+# library(DescTools)
+# 
+# base_com_gpu2 <- 
+#   base_com_gpu %>% 
+#   select(Marca, Preço) %>% 
+#   mutate(Preço = as.numeric(Preço),
+#          Preço = (Preço - mean(Preço))/sd(Preço)) %>% 
+#   as.data.frame()
+#   
+# shapiro.test(amd)
+# shapiro.test(nvidia)
+# 
+# ## Pelo teste de normalidade de Shapiro, concluimos que tanto a amd quanto a nvidia não possuem distribuição normal
+# 
+# # Mas, supomos normalidade para realizar o teste de hipótese
+# 
+# ## Vamos verificar a igualdade das variancias, ou seja,
+# 
+# # Ho: sigX / sigY  =  1
+# # H1: sigX / sigY =/= 1
+# 
+# VarTest(amd, nvidia, alternative = "two.sided", ratio = 1, conf.level = 0.95)
+# 
+# ## Com um nível de significância de 0.05, rejeitamos a h0, ou seja, as varincias não possuem igualdade entre elas
+# 
+# ## Agora, realizaremos o teste para verificar se a média dos preços das 2 variáveis são 
+# ## estatisticamente iguais ou diferente
+# 
+# # Ho: muX  =  muY
+# # H1: muX =/= muY
+# 
+# t.test(amd, nvidia, var.equal = FALSE, alt = "two.sided")
+# 
+# ## Com base num nível de significância de 5%, rejeitamos H0, ou seja, as médias dos preços 
+# ## das duas marcas  não são iguaus.
 
-amd <- 
-  base_com_gpu %>% 
-  filter(Marca=="amd") %>% 
-  mutate(Preço = as.numeric(Preço)) %$% 
-  Preço
-
-nvidia <- 
-  base_com_gpu %>% 
-  filter(Marca=="nvidia") %>% 
-  mutate(Preço = as.numeric(Preço)) %$% 
-  Preço
-
-
-
-## Queremos saber se a media dos preços das placas videos da amd é estatisticamente
-## igual ou diferente das placas de video da nvidia
-
-## Seja a X a media dos preços da amd e Y a media dos preços da nvidia
-
-# Ho: muX  =  muY
-# H1: muX =/= muY
-
-## Primeiro vamos descobrir se as variancias são guais ou diferentes
-## ou seja, homocedasticidade
-
-# Ho: sigX  =  sigY
-# H1: sigX =/= sigY
-
-install.packages("DescTools")
-library(DescTools)
-
-base_com_gpu2 <- 
-  base_com_gpu %>% 
-  select(Marca, Preço) %>% 
-  mutate(Preço = as.numeric(Preço)) %>% 
-  as.data.frame()
-
-LeveneTest(Preço ~ Marca, base_com_gpu2)
-
-# ou seja rejeitamos h0
-
-t.test(amd, nvidia, var.equal = FALSE, alt = "two.sided")
-t.test(amd, nvidia, var.equal = FALSE, alt = "less")
-t.test(amd, nvidia, var.equal = FALSE, alt = "greater")
-
-
-amd %>% mean()
-nvidia %>% mean()
-
-amd %>% sd()
-nvidia %>% sd()
-
-
-#Creating example code
-sample1 <- rnorm(20)
-sample2 <- rnorm(20)
-
-#General code to reshape two vectors into a long data.frame
-twoVarWideToLong <- function(sample1,sample2) {
-  res <- data.frame(
-    GroupID=as.factor(c(rep(1, length(sample1)), rep(2, length(sample2)))),
-    DV=c(sample1, sample2)
-  )   
-}   
-
-#Reshaping the example data
-long.data <- twoVarWideToLong(sample1,sample2)
-
-#There are many different calls here that will work... but here is an example
-LeveneTest(DV~GroupID,long.data)
 
 
 
