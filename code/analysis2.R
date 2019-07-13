@@ -554,8 +554,8 @@ plot <- estilo_jogo_mobile %>%
         geom_label(aes(label = freq)) +
         theme(title = element_text(face = "bold"), 
               axis.title = element_text(face = "bold"),
-              axis.text.x = element_text(size = 12),
-              axis.text.y = element_text(size = 12))
+              axis.text.x = element_text(size = 11),
+              axis.text.y = element_text(size = 11))
     )
   ) %$% plot
 
@@ -782,8 +782,8 @@ plot <- jogo_preferido_mobile %>%
         geom_label(aes(label = freq)) +
         theme(title = element_text(face = "bold"), 
               axis.title = element_text(face = "bold"),
-              axis.text.x = element_text(size = 12),
-              axis.text.y = element_text(size = 12))
+              axis.text.x = element_text(size = 11),
+              axis.text.y = element_text(size = 11))
     )
   ) %$% plot
 
@@ -931,20 +931,26 @@ tabela <-
 # save --------------------------------------------------------------------
 
 
-lst(
-  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
-) %>%
-  walk2(paste0("p",1:16),
-    ~ ggsave(
-      plot = .x,
-      filename = paste0("img/", .y, ".png"),
-      width = 12.00*0.6,
-      height = 8.20*0.6,
-      dpi = "retina"
-    )
+# lst(
+#   p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
+# ) %>%
+#   walk2(paste0("p",1:16),
+#     ~ ggsave(
+#       plot = .x,
+#       filename = paste0("img/", .y, ".png"),
+#       width = 12.00*0.6,
+#       height = 8.20*0.6,
+#       dpi = "retina"
+#     )
+#   )
+ 
+ggsave(
+  plot = p16,
+  filename = "img/p16.png",
+  width = 12.00*0.75,
+  height = 8.20*0.75,
+  dpi = "retina"
   )
-
-
 
 # # - -----------------------------------------------------------------------
 # # Testes ------------------------------------------------------------------
@@ -1004,7 +1010,33 @@ tsao <- t.test(amd, nvidia, var.equal = FALSE, alt = "two.sided")
 ## Com base num nível de significância de 5%, rejeitamos H0, ou seja, as médias dos preços
 ## das duas marcas  não são iguaus.
 
-t.test(amd)
-t.test(nvidia)
+amd_p$p.value
+nvidia_p$p.value
+var$p.value
+tsao$p.value
+
+tabela <- 
+  tibble(
+  "Testes de Hipótese" = c("Teste de normalidade para os preços da placa da AMD",
+                           "Teste de normalidade para os preços da placa da Nvidia",
+                           "Teste de Igualdade das Variâncias",
+                           "Teste para a diferença das médias"),
+  "p_valor" = c(amd_p$p.value,
+                nvidia_p$p.value,
+                var$p.value,
+                tsao$p.value)
+) %>% 
+  mutate(p_valor = ifelse(p_valor < 0.0001, "<0.0001", p_valor %>% round(4))) %>% 
+  regulartable() %>% 
+  theme_zebra(odd_header = "Black", odd_body = "white", even_body = "lightgray") %>% 
+  color(color = "white", part = "header") %>% 
+  align(align = "left", j = 1) %>% 
+  align(align = "left", part = "header", j = 1) %>% 
+  align(align = "center", j = 2) %>% 
+  align(align = "center", part = "header", j = 2)
+
+pacotin::insert_screenshot(tabela, "tabela1.png")
+
+
 
 
