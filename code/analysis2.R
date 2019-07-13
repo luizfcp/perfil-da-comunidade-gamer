@@ -1035,7 +1035,7 @@ tabela <-
   align(align = "center", j = 2) %>% 
   align(align = "center", part = "header", j = 2)
 
-pacotin::insert_screenshot(tabela, "tabela1.png")
+pacotin::insert_screenshot(tabela, "img/tabela2.png")
 
 
 
