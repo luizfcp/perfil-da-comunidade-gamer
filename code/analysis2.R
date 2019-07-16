@@ -1,6 +1,4 @@
 
-# jogos brasil, xbox one br, jogos mobile br/pt, uff niteroi, ilha dos estudos, ilha da macacada
-
 #http://dsgeek.com/2014/09/19/Customizingggplot2charts.html
 
 # OBS: Colocar titulo nas figuras pra apresentar, mas remover o titulo no relatorio, o titulo deve vir escrito abaixo da figura
@@ -306,7 +304,7 @@ p11 <-
 
 # Qual console você possui ------------------------------------------------
 
-p12 <- 
+base_p12 <- 
   dados %>% 
   select(qual_console_voce_possui) %>% 
   filter(!is.na(qual_console_voce_possui)) %>% 
@@ -356,12 +354,31 @@ p12 <-
   group_by(value) %>% 
   summarise(freq = n()) %>% 
   ungroup() %>% 
-  mutate(value = value %>% factor(., levels = sort(., decreasing = T))) %>% 
+  mutate(value = value %>% factor(., levels = sort(., decreasing = T)))
+
+p12 <- 
+  base_p12 %>% 
   ggplot(aes(x = value, y = freq)) +
   geom_bar(stat = 'identity', fill = "#800000") +
   labs(x = "Console (Video Game)", y = "Frequência Absoluta", 
        # title = "Console que os respospondentes disseram possuir") +
        title = "Qual console você possui?") +
+  coord_flip() +
+  geom_label(aes(label = freq)) +
+  theme(title = element_text(face = "bold"), 
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
+
+p12_mod <- 
+  base_p12 %>% 
+  arrange(-freq) %>% 
+  head(10) %>% 
+  ggplot(aes(x = value, y = freq)) +
+  geom_bar(stat = 'identity', fill = "#800000") +
+  labs(x = " ", y = "Frequência Absoluta", 
+       # title = "Console que os respospondentes disseram possuir") +
+       title = "Qual console você possui? (10 mais votados)") +
   coord_flip() +
   geom_label(aes(label = freq)) +
   theme(title = element_text(face = "bold"), 
@@ -717,45 +734,45 @@ jogo_preferido_pc <-
   filter(!str_detect(value, "^cada|etc|minha cama|mas |masmelhor|^não|^nao|^num|^nem|^nenhum|^todos|^outros|^gosto|^l2")) %>% 
   mutate(
     value = case_when(
-      str_detect(value, "^ark$") ~ str_replace_all(value, "ark", "ark survival evolved"),
+      str_detect(value, "^ark$")                  ~ str_replace_all(value, "ark", "ark survival evolved"),
       str_detect(value, "ark survival evolved^$") ~ str_replace_all(value, "ark survival evolved", "ark survival evolved"),
-      str_detect(value, "^assasin\\'s creed$") ~ str_replace_all(value, "assasin\\'s creed", "assasins creed"),
-      str_detect(value, "^bf4$") ~ str_replace_all(value, "bf4", "battlefield 4"),
-      str_detect(value, "^cod bo2$") ~ str_replace_all(value, "cod bo2", "call of duty: black ops ii"),
-      str_detect(value, "^cod black ops ii$") ~ str_replace_all(value, "cod black ops ii", "call of duty: black ops ii"),
-      str_detect(value, "^counter") ~ "counter-strike: global offensive",
-      str_detect(value, "^cs$") ~ "counter-strike",
-      str_detect(value, "^cs") ~ "counter-strike: global offensive",
-      str_detect(value, "^pubg") ~ "pubg",
-      str_detect(value, "^dota2$") ~ str_replace_all(value, "dota2", "dota 2"),
-      str_detect(value, "^ets2$") ~ str_replace_all(value, "ets2", "euro truck simulator 2"),
-      str_detect(value, "^fallout new vegas$") ~ str_replace_all(value, "fallout new vegas", "fallout: new vegas"),
-      str_detect(value, "^fortinite$") ~ str_replace_all(value, "fortinite", "fortnite"),
-      str_detect(value, "^grand fantasia gfpt$") ~ str_replace_all(value, "grand fantasia gfpt", "	grand fantasia"),
-      str_detect(value, "^grande theft auto 5$") ~ str_replace_all(value, "grande theft auto 5", "gta v"),
-      str_detect(value, "^grand theft auto v$") ~ str_replace_all(value, "grand theft auto v", "gta v"),
-      str_detect(value, "^gta 5") ~ "gta v",
-      str_detect(value, "^gta:mta$") ~ str_replace_all(value, "gta:mta", "gta"),
-      str_detect(value, "^gtav$") ~ str_replace_all(value, "gtav", "gta v"),
-      str_detect(value, "^half life$") ~ str_replace_all(value, "half life", "half-life"),
-      str_detect(value, "^kh2$") ~ str_replace_all(value, "kh2", "kingdom hearts 2"),
-      str_detect(value, "^lea") ~ "league of legends",
-      str_detect(value, "^lol") ~ "league of legends",
-      str_detect(value, "^monsters hunter") ~ str_replace_all(value, "monsters hunter", "monster hunter"),
-      str_detect(value, "^monster hunter world") ~ str_replace_all(value, "monster hunter world", "monster hunter"),
-      str_detect(value, "^wow") ~ "world of warcraft",
-      str_detect(value, "^world os warcraft$") ~ str_replace_all(value, "world os warcraft", "world of warcraft"),
-      str_detect(value, "^word of warcraft$") ~ str_replace_all(value, "word of warcraft", "world of warcraft"),
-      str_detect(value, "^world  of warcraft$") ~ str_replace_all(value, "world  of warcraft", "world of warcraft"),
-      str_detect(value, "^wot$") ~ str_replace_all(value, "wot", "world of tanks"),
-      str_detect(value, "^worl of tanks$") ~ str_replace_all(value, "worl of tanks", "world of tanks"),
-      str_detect(value, "^tíbia$") ~ str_replace_all(value, "tíbia", "tibia"),
-      str_detect(value, "^witcher 3$") ~ str_replace_all(value, "witcher 3", "the witcher 3"),
-      str_detect(value, "^zelda$") ~ str_replace_all(value, "the legend of zelda", "the legend of zelda"),
-      str_detect(value, "^tes") ~ "the elder scrolls v: skyrim",
-      str_detect(value, "^skyrim$") ~ str_replace_all(value, "skyrim", "the elder scrolls v: skyrim"),
-      str_detect(value, "^r6$") ~ str_replace_all(value, "r6", "rainbow six siege"),
-      str_detect(value, "^rainbow six$") ~ str_replace_all(value, "rainbow six", "rainbow six siege"),
+      str_detect(value, "^assasin\\'s creed$")    ~ str_replace_all(value, "assasin\\'s creed", "assasins creed"),
+      str_detect(value, "^bf4$")                  ~ str_replace_all(value, "bf4", "battlefield 4"),
+      str_detect(value, "^cod bo2$")              ~ str_replace_all(value, "cod bo2", "call of duty: black ops ii"),
+      str_detect(value, "^cod black ops ii$")     ~ str_replace_all(value, "cod black ops ii", "call of duty: black ops ii"),
+      str_detect(value, "^counter")               ~ "counter-strike: global offensive",
+      str_detect(value, "^cs$")                   ~ "counter-strike",
+      str_detect(value, "^cs")                    ~ "counter-strike: global offensive",
+      str_detect(value, "^pubg")                  ~ "pubg",
+      str_detect(value, "^dota2$")                ~ str_replace_all(value, "dota2", "dota 2"),
+      str_detect(value, "^ets2$")                 ~ str_replace_all(value, "ets2", "euro truck simulator 2"),
+      str_detect(value, "^fallout new vegas$")    ~ str_replace_all(value, "fallout new vegas", "fallout: new vegas"),
+      str_detect(value, "^fortinite$")            ~ str_replace_all(value, "fortinite", "fortnite"),
+      str_detect(value, "^grand fantasia gfpt$")  ~ str_replace_all(value, "grand fantasia gfpt", "	grand fantasia"),
+      str_detect(value, "^grande theft auto 5$")  ~ str_replace_all(value, "grande theft auto 5", "gta v"),
+      str_detect(value, "^grand theft auto v$")   ~ str_replace_all(value, "grand theft auto v", "gta v"),
+      str_detect(value, "^gta 5")                 ~ "gta v",
+      str_detect(value, "^gta:mta$")              ~ str_replace_all(value, "gta:mta", "gta"),
+      str_detect(value, "^gtav$")                 ~ str_replace_all(value, "gtav", "gta v"),
+      str_detect(value, "^half life$")            ~ str_replace_all(value, "half life", "half-life"),
+      str_detect(value, "^kh2$")                  ~ str_replace_all(value, "kh2", "kingdom hearts 2"),
+      str_detect(value, "^lea")                   ~ "league of legends",
+      str_detect(value, "^lol")                   ~ "league of legends",
+      str_detect(value, "^monsters hunter")       ~ str_replace_all(value, "monsters hunter", "monster hunter"),
+      str_detect(value, "^monster hunter world")  ~ str_replace_all(value, "monster hunter world", "monster hunter"),
+      str_detect(value, "^wow")                   ~ "world of warcraft",
+      str_detect(value, "^world os warcraft$")    ~ str_replace_all(value, "world os warcraft", "world of warcraft"),
+      str_detect(value, "^word of warcraft$")     ~ str_replace_all(value, "word of warcraft", "world of warcraft"),
+      str_detect(value, "^world  of warcraft$")   ~ str_replace_all(value, "world  of warcraft", "world of warcraft"),
+      str_detect(value, "^wot$")                  ~ str_replace_all(value, "wot", "world of tanks"),
+      str_detect(value, "^worl of tanks$")        ~ str_replace_all(value, "worl of tanks", "world of tanks"),
+      str_detect(value, "^tíbia$")                ~ str_replace_all(value, "tíbia", "tibia"),
+      str_detect(value, "^witcher 3$")            ~ str_replace_all(value, "witcher 3", "the witcher 3"),
+      str_detect(value, "^zelda$")                ~ str_replace_all(value, "the legend of zelda", "the legend of zelda"),
+      str_detect(value, "^tes")                   ~ "the elder scrolls v: skyrim",
+      str_detect(value, "^skyrim$")               ~ str_replace_all(value, "skyrim", "the elder scrolls v: skyrim"),
+      str_detect(value, "^r6$")                   ~ str_replace_all(value, "r6", "rainbow six siege"),
+      str_detect(value, "^rainbow six$")          ~ str_replace_all(value, "rainbow six", "rainbow six siege"),
       TRUE ~ value
     )
   ) %>% 
@@ -944,13 +961,13 @@ tabela <-
 #     )
 #   )
  
-ggsave(
-  plot = p16,
-  filename = "img/p16.png",
-  width = 12.00*0.75,
-  height = 8.20*0.75,
-  dpi = "retina"
-  )
+# ggsave(
+#   plot = p16,
+#   filename = "img/p16.png",
+#   width = 12.00*0.75,
+#   height = 8.20*0.75,
+#   dpi = "retina"
+#   )
 
 # # - -----------------------------------------------------------------------
 # # Testes ------------------------------------------------------------------
@@ -1035,7 +1052,7 @@ tabela <-
   align(align = "center", j = 2) %>% 
   align(align = "center", part = "header", j = 2)
 
-pacotin::insert_screenshot(tabela, "img/tabela2.png")
+# pacotin::insert_screenshot(tabela, "img/tabela2.png")
 
 
 
